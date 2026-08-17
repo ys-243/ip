@@ -5,8 +5,7 @@ import java.util.Scanner;
  */
 public class Friday {
     public static void main(String[] args) {
-        String[] tasks = new String[100];
-        boolean[] isDone = new boolean[100];
+        Task[] tasks = new Task[100];
         int taskCount = 0;
         Scanner scanner = new Scanner(System.in);
 
@@ -32,29 +31,38 @@ public class Friday {
             if (input.equals("list")) {
                 System.out.println("Here are your tasks:");
                 for (int i = 0; i < taskCount; i++) {
-                    String status = isDone[i] ? "X" : " ";
-                    System.out.println((i + 1) + ".[" + status + "] " + tasks[i]);
+                    System.out.println((i + 1)
+                                    + ".["
+                                    + tasks[i].getStatusIcon()
+                                    + "] "
+                                    + tasks[i].getDescription());
                 }
             } else if (input.startsWith("mark ")) {
                 int taskNumber = Integer.parseInt(input.substring(5).trim());
                 int taskIndex = taskNumber - 1;
-                isDone[taskIndex] = true;
+                tasks[taskIndex].markAsDone();
 
                 System.out.println("Good! This task done liao: ");
-                System.out.println(" [X] " + tasks[taskIndex]);
+                System.out.println("["
+                                    + tasks[taskIndex].getStatusIcon()
+                                    + "] "
+                                    + tasks[taskIndex].getDescription());
 
             } else if (input.startsWith("unmark ")) {
                 int taskNumber = Integer.parseInt(input.substring(7).trim());
                 int taskIndex = taskNumber - 1;
-                isDone[taskIndex] = false;
+                tasks[taskIndex].markAsUndone();
 
                 System.out.println("Nevermind! Can do later: ");
-                System.out.println(" [ ] " + tasks[taskIndex]);
+                System.out.println("["
+                                    + tasks[taskIndex].getStatusIcon()
+                                    + "] "
+                                    + tasks[taskIndex].getDescription());
 
             } else {
                 System.out.println(separator);
                 System.out.println("okay okay, i add " + input + " to the list lor.");
-                tasks[taskCount] = input;
+                tasks[taskCount] = new Task(input);
                 taskCount++;
             }
             System.out.println(separator);
