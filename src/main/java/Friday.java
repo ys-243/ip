@@ -6,6 +6,7 @@ import java.util.Scanner;
 public class Friday {
     public static void main(String[] args) {
         String[] tasks = new String[100];
+        boolean[] isDone = new boolean[100];
         int taskCount = 0;
         Scanner scanner = new Scanner(System.in);
 
@@ -29,9 +30,18 @@ public class Friday {
         String input = scanner.nextLine();
         while (!input.equals("bye")) {
             if (input.equals("list")) {
+                System.out.println("Here are your tasks:");
                 for (int i = 0; i < taskCount; i++) {
-                    System.out.println((i + 1) + ". " + tasks[i]);
+                    String status = isDone[i] ? "X" : " ";
+                    System.out.println((i + 1) + ".[" + status + "] " + tasks[i]);
                 }
+            } else if (input.startsWith("mark ")) {
+                int taskNumber = Integer.parseInt(input.substring(5).trim());
+                int taskIndex = taskNumber - 1;
+                isDone[taskIndex] = true;
+
+                System.out.println("Good! This task done liao: ");
+                System.out.println(" [X] " + tasks[taskIndex]);
             } else {
                 System.out.println(separator);
                 System.out.println("okay okay, i add " + input + " to the list lor.");
