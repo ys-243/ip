@@ -25,11 +25,13 @@ public class Friday {
 
         String input = scanner.nextLine();
         while (!input.equals("bye")) {
+            System.out.println(separator);
             System.out.println("okay okay, i do " + input + " now");
             System.out.println(separator);
             input = scanner.nextLine();
         }
         scanner.close();
+        System.out.println(separator);
         System.out.println("Bye. See you next time lah!");
         System.out.println(separator);
     }
