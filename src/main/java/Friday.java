@@ -42,6 +42,15 @@ public class Friday {
 
                 System.out.println("Good! This task done liao: ");
                 System.out.println(" [X] " + tasks[taskIndex]);
+
+            } else if (input.startsWith("unmark ")) {
+                int taskNumber = Integer.parseInt(input.substring(7).trim());
+                int taskIndex = taskNumber - 1;
+                isDone[taskIndex] = false;
+
+                System.out.println("Nevermind! Can do later: ");
+                System.out.println(" [ ] " + tasks[taskIndex]);
+
             } else {
                 System.out.println(separator);
                 System.out.println("okay okay, i add " + input + " to the list lor.");
