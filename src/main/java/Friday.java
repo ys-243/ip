@@ -1,8 +1,12 @@
+import java.util.Scanner;
+
 /**
  * Starts the Friday chatbot application.
  */
 public class Friday {
     public static void main(String[] args) {
+
+        Scanner scanner = new Scanner(System.in);
         String separator = "____________________________________________________________";
         String banner = " ______    _     _             \n"
                       + "|  ____|  (_)   | |            \n"
@@ -16,9 +20,17 @@ public class Friday {
         System.out.println(separator);
         System.out.print(banner);
         System.out.println("Hello! I'm Friday.");
-        System.out.println("What can I do for you?");
+        System.out.println("What you want ah?");
         System.out.println(separator);
-        System.out.println("Bye. Hope to see you again soon!");
+
+        String input = scanner.nextLine();
+        while (!input.equals("bye")) {
+            System.out.println("okay okay, i do " + input + " now");
+            System.out.println(separator);
+            input = scanner.nextLine();
+        }
+        scanner.close();
+        System.out.println("Bye. See you next time lah!");
         System.out.println(separator);
     }
 }
