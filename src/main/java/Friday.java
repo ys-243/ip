@@ -31,11 +31,7 @@ public class Friday {
             if (input.equals("list")) {
                 System.out.println("Here are your tasks:");
                 for (int i = 0; i < taskCount; i++) {
-                    System.out.println((i + 1)
-                                    + ".["
-                                    + tasks[i].getStatusIcon()
-                                    + "] "
-                                    + tasks[i].getDescription());
+                    System.out.println((i + 1) + "." + tasks[i].toString());
                 }
             } else if (input.startsWith("mark ")) {
                 int taskNumber = Integer.parseInt(input.substring(5).trim());
@@ -43,10 +39,7 @@ public class Friday {
                 tasks[taskIndex].markAsDone();
 
                 System.out.println("Good! This task done liao: ");
-                System.out.println("["
-                                    + tasks[taskIndex].getStatusIcon()
-                                    + "] "
-                                    + tasks[taskIndex].getDescription());
+                System.out.println(tasks[taskIndex].toString());
 
             } else if (input.startsWith("unmark ")) {
                 int taskNumber = Integer.parseInt(input.substring(7).trim());
@@ -54,17 +47,36 @@ public class Friday {
                 tasks[taskIndex].markAsUndone();
 
                 System.out.println("Nevermind! Can do later: ");
-                System.out.println("["
-                                    + tasks[taskIndex].getStatusIcon()
-                                    + "] "
-                                    + tasks[taskIndex].getDescription());
+                System.out.println(tasks[taskIndex].toString());
 
-            } else {
+            } else if (input.startsWith("todo ")) {
+                String task = input.substring(5).trim();
                 System.out.println(separator);
-                System.out.println("okay okay, i add " + input + " to the list lor.");
-                tasks[taskCount] = new Task(input);
+                System.out.println("okay okay, i add " + task + " to the list lor.");
+                tasks[taskCount] = new Todo(task);
                 taskCount++;
+                System.out.println("you have " + taskCount + " tasks lah.");
+
+            } else if (input.startsWith("event ")) {
+                String task = input.substring(6).trim();
+                System.out.println(separator);
+                System.out.println("orh, don't forget to attend ah: ");
+                tasks[taskCount] = new Event(task.split("/", 3));
+                System.out.println(tasks[taskCount].toString());
+                taskCount++;
+                System.out.println("you have " + taskCount + " tasks lah.");
+
+            } else if (input.startsWith("deadline ")) {
+                String task = input.substring(9).trim();
+                System.out.println(separator);
+                tasks[taskCount] = new Deadline(task.split("/", 2));
+                System.out.println("Remember to finish hor: ");
+                System.out.println(tasks[taskCount].toString());
+                taskCount++;
+                System.out.println("you have " + taskCount + " tasks lah.");
+
             }
+
             System.out.println(separator);
             input = scanner.nextLine();
         }
