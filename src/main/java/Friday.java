@@ -50,6 +50,22 @@ public class Friday {
                     System.out.println("Nevermind! Can do later: ");
                     System.out.println(tasks[taskIndex].toString());
 
+                } else if (input.equals("delete") || input.startsWith("delete ")) {
+                    int taskNumber = getTaskNumber(input, "delete", taskCount);
+                    int taskIndex = taskNumber - 1;
+                    Task deletedTask = tasks[taskIndex];
+
+                    // Close the gap in the array so the remaining task numbers stay consecutive.
+                    for (int i = taskIndex; i < taskCount - 1; i++) {
+                        tasks[i] = tasks[i + 1];
+                    }
+                    tasks[taskCount - 1] = null;
+                    taskCount--;
+
+                    System.out.println("Okay, I removed this task:");
+                    System.out.println(deletedTask.toString());
+                    System.out.println("you have " + taskCount + " tasks lah.");
+
                 } else if (input.equals("todo") || input.startsWith("todo ")) {
                     String task = input.substring("todo".length()).trim();
                     if (task.isEmpty()) {
@@ -125,10 +141,10 @@ public class Friday {
     }
 
     /**
-     * Extracts and validates the task number supplied to mark or unmark.
+     * Extracts and validates the task number supplied to a numbered command.
      *
      * @param input full command entered by the user
-     * @param command command name, either mark or unmark
+     * @param command command name, such as mark, unmark, or delete
      * @param taskCount number of tasks currently stored
      * @return the one-based task number
      * @throws FridayException if the number is missing, invalid, or out of range
