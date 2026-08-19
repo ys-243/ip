@@ -28,53 +28,91 @@ public class Friday {
 
         String input = scanner.nextLine();
         while (!input.equals("bye")) {
-            if (input.equals("list")) {
-                System.out.println("Here are your tasks:");
-                for (int i = 0; i < taskCount; i++) {
-                    System.out.println((i + 1) + "." + tasks[i].toString());
+            try {
+                if (input.equals("list")) {
+                    System.out.println("Here are your tasks:");
+                    for (int i = 0; i < taskCount; i++) {
+                        System.out.println((i + 1) + "." + tasks[i].toString());
+                    }
+                } else if (input.equals("mark") || input.startsWith("mark ")) {
+                    int taskNumber = getTaskNumber(input, "mark", taskCount);
+                    int taskIndex = taskNumber - 1;
+                    tasks[taskIndex].markAsDone();
+
+                    System.out.println("Good! This task done liao: ");
+                    System.out.println(tasks[taskIndex].toString());
+
+                } else if (input.equals("unmark") || input.startsWith("unmark ")) {
+                    int taskNumber = getTaskNumber(input, "unmark", taskCount);
+                    int taskIndex = taskNumber - 1;
+                    tasks[taskIndex].markAsUndone();
+
+                    System.out.println("Nevermind! Can do later: ");
+                    System.out.println(tasks[taskIndex].toString());
+
+                } else if (input.equals("todo") || input.startsWith("todo ")) {
+                    String task = input.substring("todo".length()).trim();
+                    if (task.isEmpty()) {
+                        throw new FridayException("The description of a todo cannot be empty.");
+                    }
+                    System.out.println(separator);
+                    System.out.println("okay okay, i add " + task + " to the list lor.");
+                    tasks[taskCount] = new Todo(task);
+                    taskCount++;
+                    System.out.println("you have " + taskCount + " tasks lah.");
+
+                } else if (input.equals("event") || input.startsWith("event ")) {
+                    String task = input.substring("event".length()).trim();
+                    if (task.isEmpty()) {
+                        throw new FridayException("The description of an event cannot be empty.");
+                    }
+                    int fromIndex = task.indexOf("/from ");
+                    int toIndex = task.indexOf("/to ", fromIndex + 6);
+                    if (fromIndex < 0 || toIndex < 0) {
+                        throw new FridayException("Please specify the event as: event DESCRIPTION /from START /to END");
+                    }
+                    String description = task.substring(0, fromIndex).trim();
+                    String start = task.substring(fromIndex + 6, toIndex).trim();
+                    String end = task.substring(toIndex + 4).trim();
+                    if (description.isEmpty() || start.isEmpty() || end.isEmpty()) {
+                        throw new FridayException("An event's description, start, and end cannot be empty.");
+                    }
+                    String[] eventFields = {description, start, end};
+                    System.out.println(separator);
+                    System.out.println("orh, don't forget to attend ah: ");
+                    tasks[taskCount] = new Event(eventFields);
+                    System.out.println(tasks[taskCount].toString());
+                    taskCount++;
+                    System.out.println("you have " + taskCount + " tasks lah.");
+
+                } else if (input.equals("deadline") || input.startsWith("deadline ")) {
+                    String task = input.substring("deadline".length()).trim();
+                    if (task.isEmpty()) {
+                        throw new FridayException("The description of a deadline cannot be empty.");
+                    }
+                    int byIndex = task.indexOf("/by ");
+                    if (byIndex < 0) {
+                        throw new FridayException("Please specify the deadline as: deadline DESCRIPTION /by DATE");
+                    }
+                    String description = task.substring(0, byIndex).trim();
+                    String date = task.substring(byIndex + 4).trim();
+                    if (description.isEmpty() || date.isEmpty()) {
+                        throw new FridayException("A deadline's description and date cannot be empty.");
+                    }
+                    String[] deadlineFields = {description, date};
+                    System.out.println(separator);
+                    tasks[taskCount] = new Deadline(deadlineFields);
+                    System.out.println("Remember to finish hor: ");
+                    System.out.println(tasks[taskCount].toString());
+                    taskCount++;
+                    System.out.println("you have " + taskCount + " tasks lah.");
+
+                } else {
+                    throw new FridayException("I'm sorry, but I don't know what that means :-(");
                 }
-            } else if (input.startsWith("mark ")) {
-                int taskNumber = Integer.parseInt(input.substring(5).trim());
-                int taskIndex = taskNumber - 1;
-                tasks[taskIndex].markAsDone();
-
-                System.out.println("Good! This task done liao: ");
-                System.out.println(tasks[taskIndex].toString());
-
-            } else if (input.startsWith("unmark ")) {
-                int taskNumber = Integer.parseInt(input.substring(7).trim());
-                int taskIndex = taskNumber - 1;
-                tasks[taskIndex].markAsUndone();
-
-                System.out.println("Nevermind! Can do later: ");
-                System.out.println(tasks[taskIndex].toString());
-
-            } else if (input.startsWith("todo ")) {
-                String task = input.substring(5).trim();
+            } catch (FridayException exception) {
                 System.out.println(separator);
-                System.out.println("okay okay, i add " + task + " to the list lor.");
-                tasks[taskCount] = new Todo(task);
-                taskCount++;
-                System.out.println("you have " + taskCount + " tasks lah.");
-
-            } else if (input.startsWith("event ")) {
-                String task = input.substring(6).trim();
-                System.out.println(separator);
-                System.out.println("orh, don't forget to attend ah: ");
-                tasks[taskCount] = new Event(task.split("/", 3));
-                System.out.println(tasks[taskCount].toString());
-                taskCount++;
-                System.out.println("you have " + taskCount + " tasks lah.");
-
-            } else if (input.startsWith("deadline ")) {
-                String task = input.substring(9).trim();
-                System.out.println(separator);
-                tasks[taskCount] = new Deadline(task.split("/", 2));
-                System.out.println("Remember to finish hor: ");
-                System.out.println(tasks[taskCount].toString());
-                taskCount++;
-                System.out.println("you have " + taskCount + " tasks lah.");
-
+                System.out.println("OOPS!!! " + exception.getMessage());
             }
 
             System.out.println(separator);
@@ -84,5 +122,32 @@ public class Friday {
         System.out.println(separator);
         System.out.println("Bye. See you next time lah!");
         System.out.println(separator);
+    }
+
+    /**
+     * Extracts and validates the task number supplied to mark or unmark.
+     *
+     * @param input full command entered by the user
+     * @param command command name, either mark or unmark
+     * @param taskCount number of tasks currently stored
+     * @return the one-based task number
+     * @throws FridayException if the number is missing, invalid, or out of range
+     */
+    private static int getTaskNumber(String input, String command, int taskCount)
+            throws FridayException {
+        String numberText = input.substring(command.length()).trim();
+        if (numberText.isEmpty()) {
+            throw new FridayException("Please specify a task number.");
+        }
+
+        try {
+            int taskNumber = Integer.parseInt(numberText);
+            if (taskNumber < 1 || taskNumber > taskCount) {
+                throw new FridayException("That task number does not exist.");
+            }
+            return taskNumber;
+        } catch (NumberFormatException exception) {
+            throw new FridayException("The task number must be a whole number.");
+        }
     }
 }

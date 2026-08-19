@@ -1,85 +1,55 @@
 ---
 name: test-ui
-description: [TODO: Complete and informative explanation of what the skill does and when to use it. Include WHEN to use this skill - specific scenarios, file types, or tasks that trigger it.]
+description: Run fail-fast acceptance tests for this project's interactive console UI from commands and expected output. Use when asked to create, update, or execute UI test cases; verify command-by-command console behavior; maintain test/ui-test-plan.md; or provide a transcript of a manual CLI test session.
 ---
 
-# Test Ui
+# Test UI
 
-## Overview
+Test the console program one command at a time against the cases in `test/ui-test-plan.md`. Keep the plan current and always return the console transcript.
 
-[TODO: 1-2 sentences explaining what this skill enables]
+## Record the plan
 
-## Structuring This Skill
+1. Read `test/ui-test-plan.md`. Create it from its existing template structure if it is absent.
+2. Translate the user's lists of commands and expected outputs into numbered test cases before running them.
+3. Give every case an aim, its ordered console inputs, and the exact expected output after each input. Preserve spaces, punctuation, and line breaks in fenced text blocks.
+4. Record relevant setup in the plan: launch command, working directory, prerequisites, comparison rules, and any required starting state.
+5. Do not invent missing expected output. If it cannot be derived unambiguously from the user's request or existing plan, ask for it before testing.
 
-[TODO: Choose the structure that best fits this skill's purpose. Common patterns:
+Use one case for a sequence whose commands depend on shared program state. Use separate cases when isolation is required, and state how to reset that state.
 
-**1. Workflow-Based** (best for sequential processes)
-- Works well when there are clear step-by-step procedures
-- Example: DOCX skill with "Workflow Decision Tree" -> "Reading" -> "Creating" -> "Editing"
-- Structure: ## Overview -> ## Workflow Decision Tree -> ## Step 1 -> ## Step 2...
+## Prepare the program
 
-**2. Task-Based** (best for tool collections)
-- Works well when the skill offers different operations/capabilities
-- Example: PDF skill with "Quick Start" -> "Merge PDFs" -> "Split PDFs" -> "Extract Text"
-- Structure: ## Overview -> ## Quick Start -> ## Task Category 1 -> ## Task Category 2...
+1. Read `AGENTS.md`, `README.md`, and the relevant source or build files to determine how to launch the program.
+2. Use Java 25 for Java build and run commands. On macOS, run `sdk use java 25.0.3.fx-zulu` in the same interactive shell before compiling or launching.
+3. Compile before opening the test session when compilation is needed. Treat a build or launch error as a failed test session and report it with the transcript.
+4. Start the application in a PTY so inputs can be sent incrementally and output can be observed after every command.
 
-**3. Reference/Guidelines** (best for standards or specifications)
-- Works well for brand guidelines, coding standards, or requirements
-- Example: Brand styling with "Brand Guidelines" -> "Colors" -> "Typography" -> "Features"
-- Structure: ## Overview -> ## Guidelines -> ## Specifications -> ## Usage...
+## Run tests fail-fast
 
-**4. Capabilities-Based** (best for integrated systems)
-- Works well when the skill provides multiple interrelated features
-- Example: Product Management with "Core Capabilities" -> numbered capability list
-- Structure: ## Overview -> ## Core Capabilities -> ### 1. Feature -> ### 2. Feature...
+For each test case, in plan order:
 
-Patterns can be mixed and matched as needed. Most skills combine patterns (e.g., start with task-based, add workflow for complex operations).
+1. Put the program in the starting state documented by the case.
+2. Start a fresh program process unless the plan explicitly requires state shared across cases.
+3. Wait until startup output and the input prompt are complete.
+4. Send exactly one listed input, then wait until the response and next prompt (or program exit) are complete.
+5. Compare that response with the corresponding expected output before sending another input.
+6. Normalize only terminal transport differences: CRLF versus LF and a single terminal-added echo of the submitted input. Do not ignore whitespace, blank lines, prompts, ordering, or punctuation unless the plan explicitly says to.
+7. If the output matches, continue. If it differs, send no further input, terminate the running process, and stop the entire test session immediately.
 
-Delete this entire "Structuring This Skill" section when done - it's just guidance.]
+Never update expected output merely to make a failure pass. Change it only when the user changes the requirement.
 
-## [TODO: Replace with the first main section based on chosen structure]
+## Report the session
 
-[TODO: Add content here. See examples in existing skills:
-- Code samples for technical skills
-- Decision trees for complex workflows
-- Concrete examples with realistic user requests
-- References to scripts/templates/references as needed]
+Show a chronological console transcript containing startup output, every input, and every program response. Use a fenced `text` block and make typed input visibly distinguishable, for example with an `[INPUT]` prefix added only in the report. Do not claim that this prefix was emitted by the program.
 
-## Resources (optional)
+For a successful run, report how many cases passed and link to `test/ui-test-plan.md`.
 
-Create only the resource directories this skill actually needs. Delete this section if no resources are required.
+For a failure, report:
 
-### scripts/
-Executable code (Python/Bash/etc.) that can be run directly to perform specific operations.
+- the first failed case and input;
+- the exact expected output in a fenced block;
+- the exact actual output in a fenced block;
+- the transcript up to termination; and
+- confirmation that later commands and cases were not run.
 
-**Examples from other skills:**
-- PDF skill: `fill_fillable_fields.py`, `extract_form_field_info.py` - utilities for PDF manipulation
-- DOCX skill: `document.py`, `utilities.py` - Python modules for document processing
-
-**Appropriate for:** Python scripts, shell scripts, or any executable code that performs automation, data processing, or specific operations.
-
-**Note:** Scripts may be executed without loading into context, but can still be read by Codex for patching or environment adjustments.
-
-### references/
-Documentation and reference material intended to be loaded into context to inform Codex's process and thinking.
-
-**Examples from other skills:**
-- Product management: `communication.md`, `context_building.md` - detailed workflow guides
-- BigQuery: API reference documentation and query examples
-- Finance: Schema documentation, company policies
-
-**Appropriate for:** In-depth documentation, API references, database schemas, comprehensive guides, or any detailed information that Codex should reference while working.
-
-### assets/
-Files not intended to be loaded into context, but rather used within the output Codex produces.
-
-**Examples from other skills:**
-- Brand styling: PowerPoint template files (.pptx), logo files
-- Frontend builder: HTML/React boilerplate project directories
-- Typography: Font files (.ttf, .woff2)
-
-**Appropriate for:** Templates, boilerplate code, document templates, images, icons, fonts, or any files meant to be copied or used in the final output.
-
----
-
-**Not every skill requires all three types of resources.**
+Keep raw output available until the report is complete. Clearly distinguish program output from shell/compiler diagnostics.
