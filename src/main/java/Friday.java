@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 import java.util.Scanner;
-
+// comment to allow for merge commit
 /**
  * Starts the Friday chatbot application.
  */
