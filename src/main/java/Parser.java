@@ -1,5 +1,12 @@
 /** Converts raw user input into a recognized command. */
 public class Parser {
+    /** Temporary concrete command used while individual commands are extracted. */
+    private static class ParsedCommand extends Command {
+        ParsedCommand(Type type, String input) {
+            super(type, input);
+        }
+    }
+
     /**
      * Identifies the command word while preserving the complete input for
      * command-specific argument validation.
@@ -12,7 +19,7 @@ public class Parser {
             throw new IllegalArgumentException("Command input cannot be null.");
         }
         if (input.isBlank()) {
-            return new Command(Command.Type.EMPTY, input);
+            return new ParsedCommand(Command.Type.EMPTY, input);
         }
 
         int firstSpace = input.indexOf(' ');
@@ -29,6 +36,8 @@ public class Parser {
             case "deadline" -> Command.Type.DEADLINE;
             default -> Command.Type.UNKNOWN;
         };
-        return new Command(type, input);
+        return type == Command.Type.BYE
+                ? new ExitCommand()
+                : new ParsedCommand(type, input);
     }
 }

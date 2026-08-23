@@ -2,7 +2,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 /** Represents and executes one command entered by the user. */
-public class Command {
+public abstract class Command {
     /** Command kinds recognized by the parser. */
     enum Type {
         EMPTY, BYE, LIST, MARK, UNMARK, DELETE, TODO, EVENT, ON_DATE, DEADLINE, UNKNOWN
@@ -22,7 +22,7 @@ public class Command {
 
     /** Returns whether this command asks Friday to exit. */
     public boolean isExit() {
-        return type == Type.BYE;
+        return false;
     }
 
     /** Executes this command and reports its result without leaking command errors. */
