@@ -15,12 +15,12 @@ public class Friday {
         }
 
         ui.showWelcome();
-        Command command = new Command(ui.readCommand());
+        Command command = Parser.parse(ui.readCommand());
         while (!command.isExit()) {
             ui.showSeparator();
             command.execute(tasks, ui);
             ui.showSeparator();
-            command = new Command(ui.readCommand());
+            command = Parser.parse(ui.readCommand());
         }
         ui.close();
         ui.showGoodbye();

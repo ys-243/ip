@@ -3,19 +3,26 @@ import java.time.format.DateTimeParseException;
 
 /** Represents and executes one command entered by the user. */
 public class Command {
+    /** Command kinds recognized by the parser. */
+    enum Type {
+        EMPTY, BYE, LIST, MARK, UNMARK, DELETE, TODO, EVENT, ON_DATE, DEADLINE, UNKNOWN
+    }
+
+    private final Type type;
     private final String input;
 
-    /** Creates a command from the user's normalized input. */
-    public Command(String input) {
-        if (input == null) {
-            throw new IllegalArgumentException("Command input cannot be null.");
+    /** Creates a typed command from input recognized by the parser. */
+    Command(Type type, String input) {
+        if (type == null || input == null) {
+            throw new IllegalArgumentException("Command type and input cannot be null.");
         }
+        this.type = type;
         this.input = input;
     }
 
     /** Returns whether this command asks Friday to exit. */
     public boolean isExit() {
-        return input.equals("bye");
+        return type == Type.BYE;
     }
 
     /** Executes this command and reports its result without leaking command errors. */
@@ -30,26 +37,20 @@ public class Command {
     }
 
     private void executeCommand(TaskList tasks, Ui ui) throws FridayException {
-        if (input.isBlank()) {
-            throw new FridayException("Please enter a command.");
-        } else if (input.equals("list")) {
-            showTasks(tasks, ui);
-        } else if (input.equals("mark") || input.startsWith("mark ")) {
-            markTask(tasks, ui);
-        } else if (input.equals("unmark") || input.startsWith("unmark ")) {
-            unmarkTask(tasks, ui);
-        } else if (input.equals("delete") || input.startsWith("delete ")) {
-            deleteTask(tasks, ui);
-        } else if (input.equals("todo") || input.startsWith("todo ")) {
-            addTodo(tasks, ui);
-        } else if (input.equals("event") || input.startsWith("event ")) {
-            addEvent(tasks, ui);
-        } else if (input.equals("on") || input.startsWith("on ")) {
-            showDeadlinesOnDate(tasks, ui);
-        } else if (input.equals("deadline") || input.startsWith("deadline ")) {
-            addDeadline(tasks, ui);
-        } else {
-            throw new FridayException("Eh? Sorry i don't understand that bro :-(");
+        switch (type) {
+        case EMPTY -> throw new FridayException("Please enter a command.");
+        case LIST -> showTasks(tasks, ui);
+        case MARK -> markTask(tasks, ui);
+        case UNMARK -> unmarkTask(tasks, ui);
+        case DELETE -> deleteTask(tasks, ui);
+        case TODO -> addTodo(tasks, ui);
+        case EVENT -> addEvent(tasks, ui);
+        case ON_DATE -> showDeadlinesOnDate(tasks, ui);
+        case DEADLINE -> addDeadline(tasks, ui);
+        case UNKNOWN -> throw new FridayException("Eh? Sorry i don't understand that bro :-(");
+        case BYE -> {
+            // Exit commands are handled by Friday before execution.
+        }
         }
     }
 
