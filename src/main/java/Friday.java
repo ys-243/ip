@@ -1,13 +1,24 @@
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Scanner;
 // comment to allow for merge commit
 /**
  * Starts the Friday chatbot application.
  */
+
 public class Friday {
     public static void main(String[] args) {
-        ArrayList<Task> tasks = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
+        Path storagePath = Path.of("data", "tasks.txt");
+        Storage storage = new Storage(storagePath);
+        ArrayList<Task> tasks;
+        try {
+            tasks = storage.load();
+        } catch (IOException exception) {
+            System.out.println("Could not load tasks: " + exception.getMessage());
+            tasks = new ArrayList<>();
+        }
 
         String separator = "____________________________________________________________";
 
@@ -26,13 +37,19 @@ public class Friday {
         System.out.println("What you want ah?");
         System.out.println(separator);
 
-        String input = scanner.nextLine();
+        String input = scanner.hasNextLine() ? scanner.nextLine().trim() : "bye";
         while (!input.equals("bye")) {
             try {
-                if (input.equals("list")) {
+                if (input.isBlank()) {
+                    throw new FridayException("Please enter a command.");
+                } else if (input.equals("list")) {
                     System.out.println("Here are your tasks:");
-                    for (int i = 0; i < tasks.size(); i++) {
-                        System.out.println((i + 1) + "." + tasks.get(i).toString());
+                    if (tasks.isEmpty()) {
+                        System.out.println("No tasks yet.");
+                    } else {
+                        for (int i = 0; i < tasks.size(); i++) {
+                            System.out.println((i + 1) + "." + tasks.get(i));
+                        }
                     }
                 } else if (input.equals("mark") || input.startsWith("mark ")) {
                     int taskNumber = getTaskNumber(input, "mark", tasks.size());
@@ -83,14 +100,14 @@ public class Friday {
                     String start = task.substring(fromIndex + 6, toIndex).trim();
                     String end = task.substring(toIndex + 4).trim();
                     if (description.isEmpty() || start.isEmpty() || end.isEmpty()) {
-                        throw new FridayException("Tolong, anevent's description, start, and end cannot be empty lei.");
+                        throw new FridayException("Tolong, an event's description, start, and end cannot be empty lei.");
                     }
                     String[] eventFields = {description, start, end};
                     System.out.println(separator);
                     System.out.println("orh, don't forget to attend ah: ");
                     Task event = new Event(eventFields);
                     tasks.add(event);
-                    System.out.println(event.toString());
+                    System.out.println(event);
                     System.out.println("you have " + tasks.size() + " tasks lah.");
 
                 } else if (input.equals("deadline") || input.startsWith("deadline ")) {
@@ -112,7 +129,7 @@ public class Friday {
                     Task deadline = new Deadline(deadlineFields);
                     tasks.add(deadline);
                     System.out.println("Remember to finish hor: ");
-                    System.out.println(deadline.toString());
+                    System.out.println(deadline);
                     System.out.println("you have " + tasks.size() + " tasks lah.");
 
                 } else {
@@ -124,12 +141,19 @@ public class Friday {
             }
 
             System.out.println(separator);
-            input = scanner.nextLine();
+            input = scanner.hasNextLine() ? scanner.nextLine().trim() : "bye";
         }
         scanner.close();
+
         System.out.println(separator);
         System.out.println("Bye. See you next time lah!");
         System.out.println(separator);
+
+        try {
+            storage.save(tasks);
+        } catch (IOException exception) {
+            System.out.println("Could not save tasks: " + exception.getMessage());
+        }
     }
 
     /**
