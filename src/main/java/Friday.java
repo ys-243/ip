@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -9,7 +10,8 @@ import java.util.Scanner;
 public class Friday {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Storage storage = new Storage("test.txt");
+        Path storagePath = Path.of("data", "tasks.txt");
+        Storage storage = new Storage(storagePath);
         ArrayList<Task> tasks;
         try {
             tasks = storage.load();
@@ -35,13 +37,19 @@ public class Friday {
         System.out.println("What you want ah?");
         System.out.println(separator);
 
-        String input = scanner.nextLine();
+        String input = scanner.hasNextLine() ? scanner.nextLine().trim() : "bye";
         while (!input.equals("bye")) {
             try {
-                if (input.equals("list")) {
+                if (input.isBlank()) {
+                    throw new FridayException("Please enter a command.");
+                } else if (input.equals("list")) {
                     System.out.println("Here are your tasks:");
-                    for (int i = 0; i < tasks.size(); i++) {
-                        System.out.println((i + 1) + "." + tasks.get(i).toString());
+                    if (tasks.isEmpty()) {
+                        System.out.println("No tasks yet.");
+                    } else {
+                        for (int i = 0; i < tasks.size(); i++) {
+                            System.out.println((i + 1) + "." + tasks.get(i));
+                        }
                     }
                 } else if (input.equals("mark") || input.startsWith("mark ")) {
                     int taskNumber = getTaskNumber(input, "mark", tasks.size());
@@ -133,7 +141,7 @@ public class Friday {
             }
 
             System.out.println(separator);
-            input = scanner.nextLine();
+            input = scanner.hasNextLine() ? scanner.nextLine().trim() : "bye";
         }
         scanner.close();
 

@@ -1,11 +1,17 @@
-public class Event extends Task{
+/** Represents a task occurring between a start and end time. */
+public class Event extends Task {
     protected String start;
     protected String end;
 
     public Event(String[] event) {
-        super(event[0], "[E]");
-        start = event[1].startsWith("from ") ? event[1].substring(5).trim() : event[1];
-        end = event[2].startsWith("to ") ? event[2].substring(3).trim() : event[2];
+        super(requireField(event, 0, "description"), "[E]");
+        String startValue = requireField(event, 1, "start");
+        String endValue = requireField(event, 2, "end");
+        start = startValue.startsWith("from ") ? startValue.substring(5).trim() : startValue;
+        end = endValue.startsWith("to ") ? endValue.substring(3).trim() : endValue;
+        if (start.isBlank() || end.isBlank()) {
+            throw new IllegalArgumentException("Event start and end cannot be empty.");
+        }
     }
 
     @Override
@@ -17,8 +23,16 @@ public class Event extends Task{
     @Override
     public String toFileString() {
         return type + "," + (isDone ? "1" : "0")
-                    + "," + description
-                    + "," + start
-                    + "," + end;
+                    + "," + escapeFileField(description)
+                    + "," + escapeFileField(start)
+                    + "," + escapeFileField(end);
+    }
+
+    private static String requireField(String[] fields, int index, String name) {
+        if (fields == null || fields.length <= index || fields[index] == null
+                || fields[index].isBlank()) {
+            throw new IllegalArgumentException("Event " + name + " cannot be empty.");
+        }
+        return fields[index];
     }
 }

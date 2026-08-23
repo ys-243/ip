@@ -3,11 +3,11 @@
 ## Test setup
 
 - Application: Friday console chatbot
-- Working directory: repository root
+- Working directory: a fresh temporary directory for each isolated case, so its `test.txt` starts absent
 - Java version: 25 (`sdk use java 25.0.3.fx-zulu` on macOS)
 - Compile command: `javac -d out src/main/java/*.java` (verified with Java 25.0.3 active)
-- Launch command: `java -cp out Friday`
-- Starting state: Fresh program launch; tasks are stored only in memory.
+- Launch command: `java -cp <absolute-repository-path>/out Friday`
+- Starting state: Fresh program launch with no `test.txt`, unless the case documents a prepared file or a restart.
 - Comparison: Compare exact output after each input. Normalize only CRLF to LF and one terminal-added echo of the submitted input unless a test case explicitly states another rule.
 - Failure behavior: Stop on the first mismatch, terminate the program, and do not run later commands or cases.
 
@@ -50,7 +50,7 @@ todo
 
 ```text
 ____________________________________________________________
-OOPS!!! The description of a todo cannot be empty.
+SIALA!!! todo need description leh.
 ____________________________________________________________
 ```
 
@@ -82,7 +82,7 @@ blah
 
 ```text
 ____________________________________________________________
-OOPS!!! I'm sorry, but I don't know what that means :-(
+SIALA!!! Eh? Sorry i don't understand that bro :-(
 ____________________________________________________________
 ```
 
@@ -155,7 +155,7 @@ deadline submit report
 
 ```text
 ____________________________________________________________
-OOPS!!! Please specify the deadline as: deadline DESCRIPTION /by DATE
+SIALA!!! Tolong, write this format: deadline DESCRIPTION /by DATE
 ____________________________________________________________
 ```
 
@@ -172,7 +172,7 @@ deadline submit report /by Friday
 ```text
 ____________________________________________________________
 Remember to finish hor: 
-[D][ ] submit report(by: Friday)
+[D][ ] submit report (by: Friday)
 you have 2 tasks lah.
 ____________________________________________________________
 ```
@@ -189,7 +189,7 @@ deadline /by Friday
 
 ```text
 ____________________________________________________________
-OOPS!!! A deadline's description and date cannot be empty.
+SIALA!!! Deadline's description and date must fill up lei.
 ____________________________________________________________
 ```
 
@@ -206,7 +206,7 @@ list
 ```text
 Here are your tasks:
 1.[T][ ] read book
-2.[D][ ] submit report(by: Friday)
+2.[D][ ] submit report (by: Friday)
 ____________________________________________________________
 ```
 
@@ -229,7 +229,7 @@ event project meeting /from 2pm /to 3pm
 ```text
 ____________________________________________________________
 orh, don't forget to attend ah: 
-[E][ ] project meeting(from: 2pm to: 3pm)
+[E][ ] project meeting (from: 2pm to: 3pm)
 you have 1 tasks lah.
 ____________________________________________________________
 ```
@@ -246,7 +246,7 @@ event lunch /from 12pm
 
 ```text
 ____________________________________________________________
-OOPS!!! Please specify the event as: event DESCRIPTION /from START /to END
+SIALA!!! ARE YOU DONE?! write like this lah: event DESCRIPTION /from START /to END
 ____________________________________________________________
 ```
 
@@ -262,7 +262,7 @@ list
 
 ```text
 Here are your tasks:
-1.[E][ ] project meeting(from: 2pm to: 3pm)
+1.[E][ ] project meeting (from: 2pm to: 3pm)
 ____________________________________________________________
 ```
 
@@ -278,7 +278,7 @@ event /from 2pm /to 3pm
 
 ```text
 ____________________________________________________________
-OOPS!!! An event's description, start, and end cannot be empty.
+SIALA!!! Tolong, an event's description, start, and end cannot be empty lei.
 ____________________________________________________________
 ```
 
@@ -295,7 +295,7 @@ event dinner /from 7pm /to 8pm
 ```text
 ____________________________________________________________
 orh, don't forget to attend ah: 
-[E][ ] dinner(from: 7pm to: 8pm)
+[E][ ] dinner (from: 7pm to: 8pm)
 you have 2 tasks lah.
 ____________________________________________________________
 ```
@@ -312,8 +312,8 @@ list
 
 ```text
 Here are your tasks:
-1.[E][ ] project meeting(from: 2pm to: 3pm)
-2.[E][ ] dinner(from: 7pm to: 8pm)
+1.[E][ ] project meeting (from: 2pm to: 3pm)
+2.[E][ ] dinner (from: 7pm to: 8pm)
 ____________________________________________________________
 ```
 
@@ -352,7 +352,7 @@ mark
 
 ```text
 ____________________________________________________________
-OOPS!!! Please specify a task number.
+SIALA!!! Please specify a task number.
 ____________________________________________________________
 ```
 
@@ -368,7 +368,7 @@ mark one
 
 ```text
 ____________________________________________________________
-OOPS!!! The task number must be a whole number.
+SIALA!!! The task number must be a whole number.
 ____________________________________________________________
 ```
 
@@ -416,7 +416,7 @@ unmark 2
 
 ```text
 ____________________________________________________________
-OOPS!!! That task number does not exist.
+SIALA!!! That task number does not exist.
 ____________________________________________________________
 ```
 
@@ -465,5 +465,261 @@ list
 ```text
 Here are your tasks:
 1.[T][ ] submit assignment
+____________________________________________________________
+```
+
+### UI-005: Blank input and an empty list are handled safely
+
+**Aim:** Verify that blank input receives a useful error and listing an empty task collection does not fail.
+
+**Starting state:** Fresh program launch with no `test.txt`.
+
+#### Step 1
+
+**Input**
+
+```text
+
+```
+
+**Expected output**
+
+```text
+____________________________________________________________
+SIALA!!! Please enter a command.
+____________________________________________________________
+```
+
+#### Step 2
+
+**Input**
+
+```text
+list
+```
+
+**Expected output**
+
+```text
+Here are your tasks:
+No tasks yet.
+____________________________________________________________
+```
+
+### UI-006: Delete rejects invalid positions and renumbers remaining tasks
+
+**Aim:** Verify deletion boundaries and confirm that removing one task leaves a correctly numbered list.
+
+**Starting state:** Fresh program launch with no `test.txt`.
+
+#### Step 1
+
+**Input**
+
+```text
+todo first task
+```
+
+**Expected output**
+
+```text
+____________________________________________________________
+okay okay, i add first task to the list lor.
+you have 1 tasks lah.
+____________________________________________________________
+```
+
+#### Step 2
+
+**Input**
+
+```text
+todo second task
+```
+
+**Expected output**
+
+```text
+____________________________________________________________
+okay okay, i add second task to the list lor.
+you have 2 tasks lah.
+____________________________________________________________
+```
+
+#### Step 3
+
+**Input**
+
+```text
+delete 0
+```
+
+**Expected output**
+
+```text
+____________________________________________________________
+SIALA!!! That task number does not exist.
+____________________________________________________________
+```
+
+#### Step 4
+
+**Input**
+
+```text
+delete 1
+```
+
+**Expected output**
+
+```text
+Okay, I removed this task:
+[T][ ] first task
+you have 1 tasks lah.
+____________________________________________________________
+```
+
+#### Step 5
+
+**Input**
+
+```text
+list
+```
+
+**Expected output**
+
+```text
+Here are your tasks:
+1.[T][ ] second task
+____________________________________________________________
+```
+
+### UI-007: Leading whitespace is ignored
+
+**Aim:** Verify that accidental spaces before a command do not alter the stored task description.
+
+**Starting state:** Fresh program launch with no `test.txt`.
+
+#### Step 1
+
+**Input**
+
+```text
+   todo revise notes
+```
+
+**Expected output**
+
+```text
+____________________________________________________________
+okay okay, i add revise notes to the list lor.
+you have 1 tasks lah.
+____________________________________________________________
+```
+
+#### Step 2
+
+**Input**
+
+```text
+   list
+```
+
+**Expected output**
+
+```text
+Here are your tasks:
+1.[T][ ] revise notes
+____________________________________________________________
+```
+
+### UI-008: Commas survive saving and restarting
+
+**Aim:** Verify that a comma in a description is escaped in `test.txt` and restored on the next launch.
+
+**Starting state:** Fresh program launch with no `test.txt`. Restart in the same temporary directory after Step 2.
+
+#### Step 1
+
+**Input**
+
+```text
+todo buy milk, eggs
+```
+
+**Expected output**
+
+```text
+____________________________________________________________
+okay okay, i add buy milk, eggs to the list lor.
+you have 1 tasks lah.
+____________________________________________________________
+```
+
+#### Step 2
+
+**Input**
+
+```text
+bye
+```
+
+**Expected output**
+
+```text
+____________________________________________________________
+Bye. See you next time lah!
+____________________________________________________________
+```
+
+#### Step 3
+
+**Action:** Restart Friday in the same working directory.
+
+**Input**
+
+```text
+list
+```
+
+**Expected output**
+
+```text
+Here are your tasks:
+1.[T][ ] buy milk, eggs
+____________________________________________________________
+```
+
+### UI-009: Malformed save records do not hide valid tasks
+
+**Aim:** Verify that blank, unknown, incomplete, and invalid-status records are skipped while valid records load.
+
+**Starting state:** Create `test.txt` in a fresh temporary directory with exactly:
+
+```text
+[T],0,valid task
+
+[X],0,unknown task
+[T],maybe,bad status
+[E],0,incomplete event,2pm
+[D],1,submit report,Friday
+[T],0,incomplete escape\
+```
+
+#### Step 1
+
+**Input**
+
+```text
+list
+```
+
+**Expected output**
+
+```text
+Here are your tasks:
+1.[T][ ] valid task
+2.[D][X] submit report (by: Friday)
 ____________________________________________________________
 ```
