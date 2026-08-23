@@ -41,6 +41,7 @@ public class Friday {
 
         String input = scanner.hasNextLine() ? scanner.nextLine().trim() : "bye";
         while (!input.equals("bye")) {
+            System.out.println(separator);
             try {
                 if (input.isBlank()) {
                     throw new FridayException("Please enter a command.");
@@ -83,7 +84,6 @@ public class Friday {
                     if (task.isEmpty()) {
                         throw new FridayException("todo need description leh.");
                     }
-                    System.out.println(separator);
                     System.out.println("okay okay, i add " + task + " to the list lor.");
                     tasks.add(new Todo(task));
                     System.out.println("you have " + tasks.size() + " tasks lah.");
@@ -105,12 +105,33 @@ public class Friday {
                         throw new FridayException("Tolong, an event's description, start, and end cannot be empty lei.");
                     }
                     String[] eventFields = {description, start, end};
-                    System.out.println(separator);
                     System.out.println("orh, don't forget to attend ah: ");
                     Task event = new Event(eventFields);
                     tasks.add(event);
                     System.out.println(event);
                     System.out.println("you have " + tasks.size() + " tasks lah.");
+
+                } else if (input.equals("on") || input.startsWith("on ")) {
+                    String dateText = input.substring("on".length()).trim();
+                    if (dateText.isEmpty()) {
+                        throw new FridayException(
+                                "Your date must write like yyyy-mm-dd, e.g. 2019-10-15.");
+                    }
+
+                    LocalDate requestedDate = LocalDate.parse(dateText);
+                    boolean foundDeadline = false;
+                    System.out.println("Your deadlines on " + requestedDate + " ah:");
+                    for (int i = 0; i < tasks.size(); i++) {
+                        Task task = tasks.get(i);
+                        if (task instanceof Deadline deadline
+                                && deadline.getDeadlineDate().equals(requestedDate)) {
+                            System.out.println((i + 1) + "." + deadline);
+                            foundDeadline = true;
+                        }
+                    }
+                    if (!foundDeadline) {
+                        System.out.println("Got nothing due. Heng ah!");
+                    }
 
                 } else if (input.equals("deadline") || input.startsWith("deadline ")) {
                     String task = input.substring("deadline".length()).trim();
@@ -127,7 +148,6 @@ public class Friday {
                         throw new FridayException("Deadline's description and date must fill up lei.");
                     }
                     String[] deadlineFields = {description, date};
-                    System.out.println(separator);
                     Task deadline = new Deadline(deadlineFields);
                     tasks.add(deadline);
                     System.out.println("Remember to finish hor: ");
@@ -138,10 +158,8 @@ public class Friday {
                     throw new FridayException("Eh? Sorry i don't understand that bro :-(");
                 }
             } catch (DateTimeParseException exception) {
-                System.out.println(separator);
                 System.out.println("SIALA!!! Please enter dates as yyyy-mm-dd, e.g. 2019-10-15.");
             } catch (FridayException exception) {
-                System.out.println(separator);
                 System.out.println("SIALA!!! " + exception.getMessage());
             }
 

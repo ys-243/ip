@@ -3,11 +3,11 @@
 ## Test setup
 
 - Application: Friday console chatbot
-- Working directory: a fresh temporary directory for each isolated case, so its `test.txt` starts absent
+- Working directory: a fresh temporary directory for each isolated case, so its `data/tasks.txt` starts absent
 - Java version: 25 (`sdk use java 25.0.3.fx-zulu` on macOS)
 - Compile command: `javac -d out src/main/java/*.java` (verified with Java 25.0.3 active)
 - Launch command: `java -cp <absolute-repository-path>/out Friday`
-- Starting state: Fresh program launch with no `test.txt`, unless the case documents a prepared file or a restart.
+- Starting state: Fresh program launch with no `data/tasks.txt`, unless the case documents a prepared file or a restart.
 - Comparison: Compare exact output after each input. Normalize only CRLF to LF and one terminal-added echo of the submitted input unless a test case explicitly states another rule.
 - Failure behavior: Stop on the first mismatch, terminate the program, and do not run later commands or cases.
 
@@ -65,6 +65,7 @@ list
 **Expected output**
 
 ```text
+____________________________________________________________
 Here are your tasks:
 1.[T][ ] buy milk
 ____________________________________________________________
@@ -114,6 +115,7 @@ list
 **Expected output**
 
 ```text
+____________________________________________________________
 Here are your tasks:
 1.[T][ ] buy milk
 2.[T][ ] return book
@@ -164,7 +166,7 @@ ____________________________________________________________
 **Input**
 
 ```text
-deadline submit report /by Friday
+deadline submit report /by 2026-08-30
 ```
 
 **Expected output**
@@ -172,7 +174,7 @@ deadline submit report /by Friday
 ```text
 ____________________________________________________________
 Remember to finish hor: 
-[D][ ] submit report (by: Friday)
+[D][ ] submit report (by: Aug 30 2026)
 you have 2 tasks lah.
 ____________________________________________________________
 ```
@@ -198,15 +200,32 @@ ____________________________________________________________
 **Input**
 
 ```text
+deadline submit homework /by Friday
+```
+
+**Expected Output**
+
+```text
+____________________________________________________________
+SIALA!!! Please enter dates as yyyy-mm-dd, e.g. 2019-10-15.
+____________________________________________________________
+```
+
+#### Step 6
+
+**Input**
+
+```text
 list
 ```
 
 **Expected output**
 
 ```text
+____________________________________________________________
 Here are your tasks:
 1.[T][ ] read book
-2.[D][ ] submit report (by: Friday)
+2.[D][ ] submit report (by: Aug 30 2026)
 ____________________________________________________________
 ```
 
@@ -261,6 +280,7 @@ list
 **Expected output**
 
 ```text
+____________________________________________________________
 Here are your tasks:
 1.[E][ ] project meeting (from: 2pm to: 3pm)
 ____________________________________________________________
@@ -311,6 +331,7 @@ list
 **Expected output**
 
 ```text
+____________________________________________________________
 Here are your tasks:
 1.[E][ ] project meeting (from: 2pm to: 3pm)
 2.[E][ ] dinner (from: 7pm to: 8pm)
@@ -383,6 +404,7 @@ list
 **Expected output**
 
 ```text
+____________________________________________________________
 Here are your tasks:
 1.[T][ ] submit assignment
 ____________________________________________________________
@@ -399,6 +421,7 @@ mark 1
 **Expected output**
 
 ```text
+____________________________________________________________
 Good! This task done liao: 
 [T][X] submit assignment
 ____________________________________________________________
@@ -431,6 +454,7 @@ list
 **Expected output**
 
 ```text
+____________________________________________________________
 Here are your tasks:
 1.[T][X] submit assignment
 ____________________________________________________________
@@ -447,7 +471,8 @@ unmark 1
 **Expected output**
 
 ```text
-Nevermind! Can do later: 
+____________________________________________________________
+Never mind! Can do later: 
 [T][ ] submit assignment
 ____________________________________________________________
 ```
@@ -463,6 +488,7 @@ list
 **Expected output**
 
 ```text
+____________________________________________________________
 Here are your tasks:
 1.[T][ ] submit assignment
 ____________________________________________________________
@@ -472,7 +498,7 @@ ____________________________________________________________
 
 **Aim:** Verify that blank input receives a useful error and listing an empty task collection does not fail.
 
-**Starting state:** Fresh program launch with no `test.txt`.
+**Starting state:** Fresh program launch with no `data/tasks.txt`.
 
 #### Step 1
 
@@ -501,6 +527,7 @@ list
 **Expected output**
 
 ```text
+____________________________________________________________
 Here are your tasks:
 No tasks yet.
 ____________________________________________________________
@@ -510,7 +537,7 @@ ____________________________________________________________
 
 **Aim:** Verify deletion boundaries and confirm that removing one task leaves a correctly numbered list.
 
-**Starting state:** Fresh program launch with no `test.txt`.
+**Starting state:** Fresh program launch with no `data/tasks.txt`.
 
 #### Step 1
 
@@ -573,6 +600,7 @@ delete 1
 **Expected output**
 
 ```text
+____________________________________________________________
 Okay, I removed this task:
 [T][ ] first task
 you have 1 tasks lah.
@@ -590,6 +618,7 @@ list
 **Expected output**
 
 ```text
+____________________________________________________________
 Here are your tasks:
 1.[T][ ] second task
 ____________________________________________________________
@@ -599,7 +628,7 @@ ____________________________________________________________
 
 **Aim:** Verify that accidental spaces before a command do not alter the stored task description.
 
-**Starting state:** Fresh program launch with no `test.txt`.
+**Starting state:** Fresh program launch with no `data/tasks.txt`.
 
 #### Step 1
 
@@ -629,6 +658,7 @@ ____________________________________________________________
 **Expected output**
 
 ```text
+____________________________________________________________
 Here are your tasks:
 1.[T][ ] revise notes
 ____________________________________________________________
@@ -636,9 +666,9 @@ ____________________________________________________________
 
 ### UI-008: Commas survive saving and restarting
 
-**Aim:** Verify that a comma in a description is escaped in `test.txt` and restored on the next launch.
+**Aim:** Verify that a comma in a description is escaped in `data/tasks.txt` and restored on the next launch.
 
-**Starting state:** Fresh program launch with no `test.txt`. Restart in the same temporary directory after Step 2.
+**Starting state:** Fresh program launch with no `data/tasks.txt`. Restart in the same temporary directory after Step 2.
 
 #### Step 1
 
@@ -686,6 +716,7 @@ list
 **Expected output**
 
 ```text
+____________________________________________________________
 Here are your tasks:
 1.[T][ ] buy milk, eggs
 ____________________________________________________________
@@ -695,7 +726,7 @@ ____________________________________________________________
 
 **Aim:** Verify that blank, unknown, incomplete, and invalid-status records are skipped while valid records load.
 
-**Starting state:** Create `test.txt` in a fresh temporary directory with exactly:
+**Starting state:** Create `data/tasks.txt` in a fresh temporary directory with exactly:
 
 ```text
 [T],0,valid task
@@ -703,7 +734,8 @@ ____________________________________________________________
 [X],0,unknown task
 [T],maybe,bad status
 [E],0,incomplete event,2pm
-[D],1,submit report,Friday
+[D],1,submit report,2026-08-30
+[D],0,invalid date,Friday
 [T],0,incomplete escape\
 ```
 
@@ -718,8 +750,119 @@ list
 **Expected output**
 
 ```text
+____________________________________________________________
 Here are your tasks:
 1.[T][ ] valid task
-2.[D][X] submit report (by: Friday)
+2.[D][X] submit report (by: Aug 30 2026)
+____________________________________________________________
+```
+
+### UI-010: Deadlines can be found by date
+
+**Aim:** Verify that the `on` command finds deadlines on an ISO date, preserves their original task numbers, and handles dates with no deadlines.
+
+**Starting state:** Fresh program launch with no `data/tasks.txt`.
+
+#### Step 1
+
+**Input**
+
+```text
+deadline submit report /by 2026-08-30
+```
+
+**Expected output**
+
+```text
+____________________________________________________________
+Remember to finish hor: 
+[D][ ] submit report (by: Aug 30 2026)
+you have 1 tasks lah.
+____________________________________________________________
+```
+
+#### Step 2
+
+**Input**
+
+```text
+todo buy stationery
+```
+
+**Expected output**
+
+```text
+____________________________________________________________
+okay okay, i add buy stationery to the list lor.
+you have 2 tasks lah.
+____________________________________________________________
+```
+
+#### Step 3
+
+**Input**
+
+```text
+deadline rehearse presentation /by 2026-08-30
+```
+
+**Expected output**
+
+```text
+____________________________________________________________
+Remember to finish hor: 
+[D][ ] rehearse presentation (by: Aug 30 2026)
+you have 3 tasks lah.
+____________________________________________________________
+```
+
+#### Step 4
+
+**Input**
+
+```text
+on 2026-08-30
+```
+
+**Expected output**
+
+```text
+____________________________________________________________
+Your deadlines on 2026-08-30 ah:
+1.[D][ ] submit report (by: Aug 30 2026)
+3.[D][ ] rehearse presentation (by: Aug 30 2026)
+____________________________________________________________
+```
+
+#### Step 5
+
+**Input**
+
+```text
+on 2026-08-31
+```
+
+**Expected output**
+
+```text
+____________________________________________________________
+Your deadlines on 2026-08-31 ah:
+Got nothing due. Heng ah!
+____________________________________________________________
+```
+
+#### Step 6
+
+**Input**
+
+```text
+on Friday
+```
+
+**Expected output**
+
+```text
+____________________________________________________________
+SIALA!!! Please enter dates as yyyy-mm-dd, e.g. 2019-10-15.
 ____________________________________________________________
 ```
