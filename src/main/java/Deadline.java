@@ -12,4 +12,11 @@ public class Deadline extends Task {
         return super.toString()
                 + " (by: " + end + ")";
     }
+
+    @Override
+    public String toFileString() {
+        return type + "," + (isDone ? "1" : "0")
+                    + "," + description
+                    + "," + end;
+    }
 }

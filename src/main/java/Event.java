@@ -13,4 +13,12 @@ public class Event extends Task{
         return super.toString()
                 + " (from: " + start + " to: " + end + ")";
     }
+
+    @Override
+    public String toFileString() {
+        return type + "," + (isDone ? "1" : "0")
+                    + "," + description
+                    + "," + start
+                    + "," + end;
+    }
 }

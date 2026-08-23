@@ -1,13 +1,22 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
  * Starts the Friday chatbot application.
  */
+
 public class Friday {
     public static void main(String[] args) {
-        ArrayList<Task> tasks = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
+        Storage storage = new Storage("test.txt");
+        ArrayList<Task> tasks;
+        try {
+            tasks = storage.load();
+        } catch (IOException exception) {
+            System.out.println("Could not load tasks: " + exception.getMessage());
+            tasks = new ArrayList<>();
+        }
 
         String separator = "____________________________________________________________";
 
@@ -83,14 +92,14 @@ public class Friday {
                     String start = task.substring(fromIndex + 6, toIndex).trim();
                     String end = task.substring(toIndex + 4).trim();
                     if (description.isEmpty() || start.isEmpty() || end.isEmpty()) {
-                        throw new FridayException("Tolong, anevent's description, start, and end cannot be empty lei.");
+                        throw new FridayException("Tolong, an event's description, start, and end cannot be empty lei.");
                     }
                     String[] eventFields = {description, start, end};
                     System.out.println(separator);
                     System.out.println("orh, don't forget to attend ah: ");
                     Task event = new Event(eventFields);
                     tasks.add(event);
-                    System.out.println(event.toString());
+                    System.out.println(event);
                     System.out.println("you have " + tasks.size() + " tasks lah.");
 
                 } else if (input.equals("deadline") || input.startsWith("deadline ")) {
@@ -112,7 +121,7 @@ public class Friday {
                     Task deadline = new Deadline(deadlineFields);
                     tasks.add(deadline);
                     System.out.println("Remember to finish hor: ");
-                    System.out.println(deadline.toString());
+                    System.out.println(deadline);
                     System.out.println("you have " + tasks.size() + " tasks lah.");
 
                 } else {
@@ -127,9 +136,16 @@ public class Friday {
             input = scanner.nextLine();
         }
         scanner.close();
+
         System.out.println(separator);
         System.out.println("Bye. See you next time lah!");
         System.out.println(separator);
+
+        try {
+            storage.save(tasks);
+        } catch (IOException exception) {
+            System.out.println("Could not save tasks: " + exception.getMessage());
+        }
     }
 
     /**

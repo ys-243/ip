@@ -20,4 +20,9 @@ public class Task {
     public String toString() {
         return type + (isDone ? "[X] " : "[ ] ") + description;
     }
+
+    public String toFileString() {
+        return type + "," + (isDone ? "1" : "0")
+                    + "," + description;
+    }
 }
