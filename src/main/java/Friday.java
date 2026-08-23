@@ -3,7 +3,6 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Scanner;
 // comment to allow for merge commit
 /**
  * Starts the Friday chatbot application.
@@ -11,47 +10,32 @@ import java.util.Scanner;
 
 public class Friday {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        Ui ui = new Ui();
         Path storagePath = Path.of("data", "tasks.txt");
         Storage storage = new Storage(storagePath);
         ArrayList<Task> tasks;
         try {
             tasks = storage.load();
         } catch (IOException exception) {
-            System.out.println("Cannot load tasks leh: " + exception.getMessage());
+            ui.showLine("Cannot load tasks leh: " + exception.getMessage());
             tasks = new ArrayList<>();
         }
 
-        String separator = "____________________________________________________________";
+        ui.showWelcome();
 
-        String banner = " ______    _     _             \n"
-                      + "|  ____|  (_)   | |            \n"
-                      + "| |__ _ __ _  __| | __ _ _   _\n"
-                      + "|  __| '__| |/ _` |/ _` | | | |\n"
-                      + "| |  | |  | | (_| | (_| | |_| |\n"
-                      + "|_|  |_|  |_|\\__,_|\\__,_|\\__, |\n"
-                      + "                          __/ |\n"
-                      + "                         |___/ \n";
-
-        System.out.println(separator);
-        System.out.print(banner);
-        System.out.println("Hello! I'm Friday.");
-        System.out.println("What you want ah?");
-        System.out.println(separator);
-
-        String input = scanner.hasNextLine() ? scanner.nextLine().trim() : "bye";
+        String input = ui.readCommand();
         while (!input.equals("bye")) {
-            System.out.println(separator);
+            ui.showSeparator();
             try {
                 if (input.isBlank()) {
                     throw new FridayException("Please enter a command.");
                 } else if (input.equals("list")) {
-                    System.out.println("Here are your tasks:");
+                    ui.showLine("Here are your tasks:");
                     if (tasks.isEmpty()) {
-                        System.out.println("No tasks yet.");
+                        ui.showLine("No tasks yet.");
                     } else {
                         for (int i = 0; i < tasks.size(); i++) {
-                            System.out.println((i + 1) + "." + tasks.get(i));
+                            ui.showLine((i + 1) + "." + tasks.get(i));
                         }
                     }
                 } else if (input.equals("mark") || input.startsWith("mark ")) {
@@ -59,34 +43,34 @@ public class Friday {
                     int taskIndex = taskNumber - 1;
                     tasks.get(taskIndex).markAsDone();
 
-                    System.out.println("Good! This task done liao: ");
-                    System.out.println(tasks.get(taskIndex).toString());
+                    ui.showLine("Good! This task done liao: ");
+                    ui.showLine(tasks.get(taskIndex).toString());
 
                 } else if (input.equals("unmark") || input.startsWith("unmark ")) {
                     int taskNumber = getTaskNumber(input, "unmark", tasks.size());
                     int taskIndex = taskNumber - 1;
                     tasks.get(taskIndex).markAsUndone();
 
-                    System.out.println("Never mind! Can do later: ");
-                    System.out.println(tasks.get(taskIndex).toString());
+                    ui.showLine("Never mind! Can do later: ");
+                    ui.showLine(tasks.get(taskIndex).toString());
 
                 } else if (input.equals("delete") || input.startsWith("delete ")) {
                     int taskNumber = getTaskNumber(input, "delete", tasks.size());
                     int taskIndex = taskNumber - 1;
                     Task deletedTask = tasks.remove(taskIndex);
 
-                    System.out.println("Okay, I removed this task:");
-                    System.out.println(deletedTask.toString());
-                    System.out.println("you have " + tasks.size() + " tasks lah.");
+                    ui.showLine("Okay, I removed this task:");
+                    ui.showLine(deletedTask.toString());
+                    ui.showLine("you have " + tasks.size() + " tasks lah.");
 
                 } else if (input.equals("todo") || input.startsWith("todo ")) {
                     String task = input.substring("todo".length()).trim();
                     if (task.isEmpty()) {
                         throw new FridayException("todo need description leh.");
                     }
-                    System.out.println("okay okay, i add " + task + " to the list lor.");
+                    ui.showLine("okay okay, i add " + task + " to the list lor.");
                     tasks.add(new Todo(task));
-                    System.out.println("you have " + tasks.size() + " tasks lah.");
+                    ui.showLine("you have " + tasks.size() + " tasks lah.");
 
                 } else if (input.equals("event") || input.startsWith("event ")) {
                     String task = input.substring("event".length()).trim();
@@ -105,11 +89,11 @@ public class Friday {
                         throw new FridayException("Tolong, an event's description, start, and end cannot be empty lei.");
                     }
                     String[] eventFields = {description, start, end};
-                    System.out.println("orh, don't forget to attend ah: ");
+                    ui.showLine("orh, don't forget to attend ah: ");
                     Task event = new Event(eventFields);
                     tasks.add(event);
-                    System.out.println(event);
-                    System.out.println("you have " + tasks.size() + " tasks lah.");
+                    ui.showLine(event.toString());
+                    ui.showLine("you have " + tasks.size() + " tasks lah.");
 
                 } else if (input.equals("on") || input.startsWith("on ")) {
                     String dateText = input.substring("on".length()).trim();
@@ -120,17 +104,17 @@ public class Friday {
 
                     LocalDate requestedDate = LocalDate.parse(dateText);
                     boolean foundDeadline = false;
-                    System.out.println("Your deadlines on " + requestedDate + " ah:");
+                    ui.showLine("Your deadlines on " + requestedDate + " ah:");
                     for (int i = 0; i < tasks.size(); i++) {
                         Task task = tasks.get(i);
                         if (task instanceof Deadline deadline
                                 && deadline.getDeadlineDate().equals(requestedDate)) {
-                            System.out.println((i + 1) + "." + deadline);
+                            ui.showLine((i + 1) + "." + deadline);
                             foundDeadline = true;
                         }
                     }
                     if (!foundDeadline) {
-                        System.out.println("Got nothing due. Heng ah!");
+                        ui.showLine("Got nothing due. Heng ah!");
                     }
 
                 } else if (input.equals("deadline") || input.startsWith("deadline ")) {
@@ -150,32 +134,30 @@ public class Friday {
                     String[] deadlineFields = {description, date};
                     Task deadline = new Deadline(deadlineFields);
                     tasks.add(deadline);
-                    System.out.println("Remember to finish hor: ");
-                    System.out.println(deadline);
-                    System.out.println("you have " + tasks.size() + " tasks lah.");
+                    ui.showLine("Remember to finish hor: ");
+                    ui.showLine(deadline.toString());
+                    ui.showLine("you have " + tasks.size() + " tasks lah.");
 
                 } else {
                     throw new FridayException("Eh? Sorry i don't understand that bro :-(");
                 }
             } catch (DateTimeParseException exception) {
-                System.out.println("SIALA!!! Please enter dates as yyyy-mm-dd, e.g. 2019-10-15.");
+                ui.showLine("SIALA!!! Please enter dates as yyyy-mm-dd, e.g. 2019-10-15.");
             } catch (FridayException exception) {
-                System.out.println("SIALA!!! " + exception.getMessage());
+                ui.showLine("SIALA!!! " + exception.getMessage());
             }
 
-            System.out.println(separator);
-            input = scanner.hasNextLine() ? scanner.nextLine().trim() : "bye";
+            ui.showSeparator();
+            input = ui.readCommand();
         }
-        scanner.close();
+        ui.close();
 
-        System.out.println(separator);
-        System.out.println("Bye. See you next time lah!");
-        System.out.println(separator);
+        ui.showGoodbye();
 
         try {
             storage.save(tasks);
         } catch (IOException exception) {
-            System.out.println("Could not save tasks: " + exception.getMessage());
+            ui.showLine("Could not save tasks: " + exception.getMessage());
         }
     }
 
