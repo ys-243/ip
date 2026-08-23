@@ -1,27 +1,41 @@
-/** Represents a task that must be completed by a specified time. */
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
+/** Represents a task that must be completed by a specified date. */
 public class Deadline extends Task {
-    protected String end;
+    private static final DateTimeFormatter DISPLAY_FORMAT =
+            DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
+
+    protected LocalDate end;
 
     public Deadline(String[] Deadline) {
         super(requireField(Deadline, 0, "description"), "[D]");
         String endValue = requireField(Deadline, 1, "deadline");
-        end = endValue.startsWith("by ") ? endValue.substring(3).trim() : endValue;
-        if (end.isBlank()) {
-            throw new IllegalArgumentException("Deadline cannot be empty.");
-        }
+        String dateText = endValue.startsWith("by ") ? endValue.substring(3).trim() : endValue;
+        end = LocalDate.parse(dateText);
     }
 
     @Override
     public String toString() {
         return super.toString()
-                + " (by: " + end + ")";
+                + " (by: " + end.format(DISPLAY_FORMAT) + ")";
     }
 
     @Override
     public String toFileString() {
         return type + "," + (isDone ? "1" : "0")
                     + "," + escapeFileField(description)
-                    + "," + escapeFileField(end);
+                    + "," + escapeFileField(end.toString());
+    }
+
+    /**
+     * Returns the date on which this task is due.
+     *
+     * @return deadline date
+     */
+    public LocalDate getDeadlineDate() {
+        return end;
     }
 
     private static String requireField(String[] fields, int index, String name) {

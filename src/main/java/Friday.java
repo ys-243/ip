@@ -1,5 +1,7 @@
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 // comment to allow for merge commit
@@ -16,7 +18,7 @@ public class Friday {
         try {
             tasks = storage.load();
         } catch (IOException exception) {
-            System.out.println("Could not load tasks: " + exception.getMessage());
+            System.out.println("Cannot load tasks leh: " + exception.getMessage());
             tasks = new ArrayList<>();
         }
 
@@ -64,7 +66,7 @@ public class Friday {
                     int taskIndex = taskNumber - 1;
                     tasks.get(taskIndex).markAsUndone();
 
-                    System.out.println("Nevermind! Can do later: ");
+                    System.out.println("Never mind! Can do later: ");
                     System.out.println(tasks.get(taskIndex).toString());
 
                 } else if (input.equals("delete") || input.startsWith("delete ")) {
@@ -135,6 +137,9 @@ public class Friday {
                 } else {
                     throw new FridayException("Eh? Sorry i don't understand that bro :-(");
                 }
+            } catch (DateTimeParseException exception) {
+                System.out.println(separator);
+                System.out.println("SIALA!!! Please enter dates as yyyy-mm-dd, e.g. 2019-10-15.");
             } catch (FridayException exception) {
                 System.out.println(separator);
                 System.out.println("SIALA!!! " + exception.getMessage());
