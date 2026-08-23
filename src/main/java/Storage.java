@@ -76,7 +76,7 @@ public class Storage {
      * @param tasks tasks to save
      * @throws IOException if the file cannot be written
      */
-    public void save(ArrayList<Task> tasks) throws IOException {
+    public void save(TaskList tasks) throws IOException {
         if (tasks == null) {
             throw new IllegalArgumentException("Task list cannot be null.");
         }
