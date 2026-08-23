@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +63,7 @@ public class Storage {
                     task.markAsDone();
                 }
                 tasks.add(task);
-            } catch (IllegalArgumentException exception) {
+            } catch (IllegalArgumentException | DateTimeParseException exception) {
                 // Ignore malformed records and continue loading the usable ones.
             }
         }
