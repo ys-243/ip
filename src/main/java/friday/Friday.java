@@ -14,6 +14,11 @@ import friday.ui.Ui;
  */
 public class Friday {
     /**
+     * Starts the Friday application.
+     *
+     * @param args Command-line arguments, which are not used.
+     */
+    /**
      * Creates a Friday application entry point.
      */
     public Friday() {
