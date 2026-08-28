@@ -54,6 +54,21 @@ public class TaskList implements Iterable<Task> {
         return tasks.isEmpty();
     }
 
+    /**
+     * Returns all tasks whose descriptions contain the keyword, in list order.
+     *
+     * @param keyword text to search for
+     * @return matching tasks
+     */
+    public List<Task> find(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            throw new IllegalArgumentException("Search keyword cannot be empty.");
+        }
+        return tasks.stream()
+                .filter(task -> task.descriptionContains(keyword))
+                .toList();
+    }
+
     /** Allows storage and other clients to visit tasks without exposing the list. */
     @Override
     public Iterator<Task> iterator() {

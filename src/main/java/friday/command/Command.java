@@ -2,6 +2,7 @@ package friday.command;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 import friday.exception.FridayException;
 import friday.task.Deadline;
@@ -15,7 +16,7 @@ import friday.ui.Ui;
 public abstract class Command {
     /** Command kinds recognized by the parser. */
     public enum Type {
-        EMPTY, BYE, LIST, MARK, UNMARK, DELETE, TODO, EVENT, ON_DATE, DEADLINE, UNKNOWN
+        EMPTY, BYE, LIST, MARK, UNMARK, DELETE, FIND, TODO, EVENT, ON_DATE, DEADLINE, UNKNOWN
     }
 
     private final Type type;
@@ -53,6 +54,7 @@ public abstract class Command {
         case MARK -> markTask(tasks, ui);
         case UNMARK -> unmarkTask(tasks, ui);
         case DELETE -> deleteTask(tasks, ui);
+        case FIND -> findTasks(tasks, ui);
         case TODO -> addTodo(tasks, ui);
         case EVENT -> addEvent(tasks, ui);
         case ON_DATE -> showDeadlinesOnDate(tasks, ui);
@@ -95,6 +97,23 @@ public abstract class Command {
         ui.showLine("Okay, I removed this task:");
         ui.showLine(deletedTask.toString());
         ui.showLine("you have " + tasks.size() + " tasks lah.");
+    }
+
+    private void findTasks(TaskList tasks, Ui ui) throws FridayException {
+        String keyword = input.substring("find".length()).trim();
+        if (keyword.isEmpty()) {
+            throw new FridayException("Please specify a keyword to find.");
+        }
+
+        List<Task> matches = tasks.find(keyword);
+        ui.showLine("Okay here's the task ah:");
+        if (matches.isEmpty()) {
+            ui.showLine("No matching tasks found leh.");
+            return;
+        }
+        for (int i = 0; i < matches.size(); i++) {
+            ui.showLine((i + 1) + "." + matches.get(i));
+        }
     }
 
     private void addTodo(TaskList tasks, Ui ui) throws FridayException {

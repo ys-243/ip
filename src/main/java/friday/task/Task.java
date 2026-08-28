@@ -23,6 +23,14 @@ public class Task {
         isDone = false;
     }
 
+    /** Returns whether this task's description contains the given keyword. */
+    public boolean descriptionContains(String keyword) {
+        if (keyword == null) {
+            throw new IllegalArgumentException("Search keyword cannot be null.");
+        }
+        return description.contains(keyword);
+    }
+
     public String toString() {
         return type + (isDone ? "[X] " : "[ ] ") + description;
     }
