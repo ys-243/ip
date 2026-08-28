@@ -1,10 +1,20 @@
+package friday.command;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+
+import friday.exception.FridayException;
+import friday.task.Deadline;
+import friday.task.Event;
+import friday.task.Task;
+import friday.task.TaskList;
+import friday.task.Todo;
+import friday.ui.Ui;
 
 /** Represents and executes one command entered by the user. */
 public abstract class Command {
     /** Command kinds recognized by the parser. */
-    enum Type {
+    public enum Type {
         EMPTY, BYE, LIST, MARK, UNMARK, DELETE, TODO, EVENT, ON_DATE, DEADLINE, UNKNOWN
     }
 
@@ -12,7 +22,7 @@ public abstract class Command {
     private final String input;
 
     /** Creates a typed command from input recognized by the parser. */
-    Command(Type type, String input) {
+    protected Command(Type type, String input) {
         if (type == null || input == null) {
             throw new IllegalArgumentException("Command type and input cannot be null.");
         }

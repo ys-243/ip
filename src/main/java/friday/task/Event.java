@@ -1,3 +1,5 @@
+package friday.task;
+
 /** Represents a task occurring between a start and end time. */
 public class Event extends Task {
     protected String start;

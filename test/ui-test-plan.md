@@ -5,8 +5,8 @@
 - Application: Friday console chatbot
 - Working directory: a fresh temporary directory for each isolated case, so its `data/tasks.txt` starts absent
 - Java version: 25 (`sdk use java 25.0.3.fx-zulu` on macOS)
-- Compile command: `javac -d out src/main/java/*.java` (verified with Java 25.0.3 active)
-- Launch command: `java -cp <absolute-repository-path>/out Friday`
+- Compile command: `javac -d out $(find src/main/java -name "*.java")` (verified with Java 25.0.3 active)
+- Launch command: `java -cp <absolute-repository-path>/out friday.Friday`
 - Starting state: Fresh program launch with no `data/tasks.txt`, unless the case documents a prepared file or a restart.
 - Comparison: Compare exact output after each input. Normalize only CRLF to LF and one terminal-added echo of the submitted input unless a test case explicitly states another rule.
 - Failure behavior: Stop on the first mismatch, terminate the program, and do not run later commands or cases.

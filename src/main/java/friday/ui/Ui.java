@@ -1,3 +1,5 @@
+package friday.ui;
+
 import java.util.Scanner;
 
 /** Handles all console input and output for the Friday application. */

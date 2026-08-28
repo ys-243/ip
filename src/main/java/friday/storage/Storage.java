@@ -1,3 +1,5 @@
+package friday.storage;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -5,6 +7,12 @@ import java.nio.file.Path;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+
+import friday.task.Deadline;
+import friday.task.Event;
+import friday.task.Task;
+import friday.task.TaskList;
+import friday.task.Todo;
 
 /* Format:
     Todo_task: type,isdone, description,

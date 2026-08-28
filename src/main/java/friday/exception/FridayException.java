@@ -1,3 +1,5 @@
+package friday.exception;
+
 /**
  * Represents an invalid command entered by the user.
  */

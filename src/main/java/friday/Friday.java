@@ -1,5 +1,13 @@
+package friday;
+
 import java.io.IOException;
 import java.nio.file.Path;
+
+import friday.command.Command;
+import friday.parser.Parser;
+import friday.storage.Storage;
+import friday.task.TaskList;
+import friday.ui.Ui;
 
 /** Starts and coordinates the Friday chatbot application. */
 public class Friday {

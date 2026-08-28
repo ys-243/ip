@@ -1,3 +1,8 @@
+package friday.command;
+
+import friday.task.TaskList;
+import friday.ui.Ui;
+
 /** Represents the command that ends the Friday application. */
 public class ExitCommand extends Command {
     /** Creates an exit command. */
