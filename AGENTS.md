@@ -28,6 +28,10 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 Ensure that Java 25 is used when running the application or build tasks. On macOS, use `sdk use java 25.0.3.fx-zulu` to switch to Java 25 if needed.
 
+## Java coding standard
+
+For every Java code creation, edit, refactor, or review in this project, you MUST load and follow the project-specific `seedu-java-coding-standard` skill at `.codex/skills/seedu-java-coding-standard/SKILL.md`. All Java production and test code must comply with the SE-EDU basic and intermediate Java coding standard described by that skill.
+
 ## Testing
 
 Maintain JUnit tests for approximately the top 50% highest-value methods. Prioritize methods that contain complex logic, implement core application behavior, handle important data, or present a high risk if they fail; exhaustive tests for trivial methods are not required merely to reach the target.
