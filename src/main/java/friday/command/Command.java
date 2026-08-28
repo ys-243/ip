@@ -40,7 +40,7 @@ public abstract class Command {
         try {
             executeCommand(tasks, ui);
         } catch (DateTimeParseException exception) {
-            ui.showLine("SIALA!!! Please enter dates as yyyy-mm-dd, e.g. 2019-10-15.");
+            ui.showLine("Uhm bro, enter the date as yyyy-mm-dd, e.g. 2019-10-15.");
         } catch (FridayException exception) {
             ui.showLine("SIALA!!! " + exception.getMessage());
         }
@@ -48,7 +48,7 @@ public abstract class Command {
 
     private void executeCommand(TaskList tasks, Ui ui) throws FridayException {
         switch (type) {
-        case EMPTY -> throw new FridayException("Please enter a command.");
+        case EMPTY -> throw new FridayException("Enter a command leh.");
         case LIST -> showTasks(tasks, ui);
         case MARK -> markTask(tasks, ui);
         case UNMARK -> unmarkTask(tasks, ui);
@@ -67,7 +67,7 @@ public abstract class Command {
     private void showTasks(TaskList tasks, Ui ui) {
         ui.showLine("Here are your tasks:");
         if (tasks.isEmpty()) {
-            ui.showLine("No tasks yet.");
+            ui.showLine("Don't have tasks ah bro.");
             return;
         }
         for (int i = 0; i < tasks.size(); i++) {
