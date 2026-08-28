@@ -31,6 +31,8 @@ public abstract class Command {
         UNMARK,
         /** Request to delete a task. */
         DELETE,
+        /** Request to find a task */
+        FIND,
         /** Request to add a to-do task. */
         TODO,
         /** Request to add an event. */
@@ -88,17 +90,20 @@ public abstract class Command {
 
     private void executeCommand(TaskList tasks, Ui ui) throws FridayException {
         switch (type) {
-            case EMPTY -> throw new FridayException("Enter a command leh.");
-            case LIST -> showTasks(tasks, ui);
-            case MARK -> markTask(tasks, ui);
-            case UNMARK -> unmarkTask(tasks, ui);
-            case DELETE -> deleteTask(tasks, ui);
-            case TODO -> addTodo(tasks, ui);
-            case EVENT -> addEvent(tasks, ui);
-            case ON_DATE -> showDeadlinesOnDate(tasks, ui);
-            case DEADLINE -> addDeadline(tasks, ui);
-            case UNKNOWN -> throw new FridayException("Eh? Sorry i don't understand that bro :-(");
-            case BYE -> {} // Exit commands are handled by Friday before execution.
+        case EMPTY -> throw new FridayException("Enter a command leh.");
+        case LIST -> showTasks(tasks, ui);
+        case MARK -> markTask(tasks, ui);
+        case UNMARK -> unmarkTask(tasks, ui);
+        case DELETE -> deleteTask(tasks, ui);
+        case FIND -> findTasks(tasks, ui);
+        case TODO -> addTodo(tasks, ui);
+        case EVENT -> addEvent(tasks, ui);
+        case ON_DATE -> showDeadlinesOnDate(tasks, ui);
+        case DEADLINE -> addDeadline(tasks, ui);
+        case UNKNOWN -> throw new FridayException("Eh? Sorry i don't understand that bro :-(");
+        case BYE -> {
+            // Exit commands are handled by Friday before execution.
+        }
         }
     }
 
@@ -133,6 +138,23 @@ public abstract class Command {
         ui.showLine("Okay, I removed this task:");
         ui.showLine(deletedTask.toString());
         ui.showLine("you have " + tasks.size() + " tasks lah.");
+    }
+
+    private void findTasks(TaskList tasks, Ui ui) throws FridayException {
+        String keyword = input.substring("find".length()).trim();
+        if (keyword.isEmpty()) {
+            throw new FridayException("Please specify a keyword to find.");
+        }
+
+        List<Task> matches = tasks.find(keyword);
+        ui.showLine("Okay here's the task ah:");
+        if (matches.isEmpty()) {
+            ui.showLine("No matching tasks found leh.");
+            return;
+        }
+        for (int i = 0; i < matches.size(); i++) {
+            ui.showLine((i + 1) + "." + matches.get(i));
+        }
     }
 
     private void addTodo(TaskList tasks, Ui ui) throws FridayException {

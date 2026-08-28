@@ -44,6 +44,7 @@ public class Parser {
             case "mark" -> Command.Type.MARK;
             case "unmark" -> Command.Type.UNMARK;
             case "delete" -> Command.Type.DELETE;
+            case "find" -> Command.Type.FIND;
             case "todo" -> Command.Type.TODO;
             case "event" -> Command.Type.EVENT;
             case "on" -> Command.Type.ON_DATE;

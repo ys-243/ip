@@ -48,4 +48,26 @@ class TaskListTest {
 
         assertThrows(UnsupportedOperationException.class, iterator::remove);
     }
+
+    @Test
+    void find_keywordInMultipleDescriptions_returnsAllMatchesInListOrder() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("read book"));
+        tasks.add(new Todo("buy groceries"));
+        tasks.add(new Todo("return book"));
+
+        var matches = tasks.find("book");
+
+        assertEquals(2, matches.size());
+        assertEquals("[T][ ] read book", matches.get(0).toString());
+        assertEquals("[T][ ] return book", matches.get(1).toString());
+    }
+
+    @Test
+    void find_missingKeyword_returnsEmptyList() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("read book"));
+
+        assertEquals(0, tasks.find("movie").size());
+    }
 }

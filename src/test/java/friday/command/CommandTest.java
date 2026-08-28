@@ -75,4 +75,29 @@ class CommandTest {
 
         assertEquals("[D][ ] submit report (by: Aug 30 2026)", tasks.get(0).toString());
     }
+
+    @Test
+    void execute_findCommand_displaysAllMatchingTasks() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("read book"));
+        tasks.add(new Todo("buy groceries"));
+        tasks.add(new Todo("return book"));
+        RecordingUi ui = new RecordingUi();
+
+        Parser.parse("find book").execute(tasks, ui);
+
+        assertEquals(List.of(
+                "Okay here's the task ah:",
+                "1.[T][ ] read book",
+                "2.[T][ ] return book"), ui.messages);
+    }
+
+    @Test
+    void execute_findWithoutKeyword_reportsError() {
+        RecordingUi ui = new RecordingUi();
+
+        Parser.parse("find").execute(new TaskList(), ui);
+
+        assertTrue(ui.messages.get(0).contains("specify a keyword"));
+    }
 }
