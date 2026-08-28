@@ -1,3 +1,5 @@
+package friday.task;
+
 /** Represents a task stored by the Friday application. */
 public class Task {
     protected String description;

@@ -1,3 +1,8 @@
+package friday.parser;
+
+import friday.command.Command;
+import friday.command.ExitCommand;
+
 /** Converts raw user input into a recognized command. */
 public class Parser {
     /** Temporary concrete command used while individual commands are extracted. */

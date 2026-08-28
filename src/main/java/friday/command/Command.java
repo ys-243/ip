@@ -1,10 +1,20 @@
+package friday.command;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+
+import friday.exception.FridayException;
+import friday.task.Deadline;
+import friday.task.Event;
+import friday.task.Task;
+import friday.task.TaskList;
+import friday.task.Todo;
+import friday.ui.Ui;
 
 /** Represents and executes one command entered by the user. */
 public abstract class Command {
     /** Command kinds recognized by the parser. */
-    enum Type {
+    public enum Type {
         EMPTY, BYE, LIST, MARK, UNMARK, DELETE, TODO, EVENT, ON_DATE, DEADLINE, UNKNOWN
     }
 
@@ -12,7 +22,7 @@ public abstract class Command {
     private final String input;
 
     /** Creates a typed command from input recognized by the parser. */
-    Command(Type type, String input) {
+    protected Command(Type type, String input) {
         if (type == null || input == null) {
             throw new IllegalArgumentException("Command type and input cannot be null.");
         }
@@ -30,7 +40,7 @@ public abstract class Command {
         try {
             executeCommand(tasks, ui);
         } catch (DateTimeParseException exception) {
-            ui.showLine("SIALA!!! Please enter dates as yyyy-mm-dd, e.g. 2019-10-15.");
+            ui.showLine("Uhm bro, enter the date as yyyy-mm-dd, e.g. 2019-10-15.");
         } catch (FridayException exception) {
             ui.showLine("SIALA!!! " + exception.getMessage());
         }
@@ -38,7 +48,7 @@ public abstract class Command {
 
     private void executeCommand(TaskList tasks, Ui ui) throws FridayException {
         switch (type) {
-        case EMPTY -> throw new FridayException("Please enter a command.");
+        case EMPTY -> throw new FridayException("Enter a command leh.");
         case LIST -> showTasks(tasks, ui);
         case MARK -> markTask(tasks, ui);
         case UNMARK -> unmarkTask(tasks, ui);
@@ -57,7 +67,7 @@ public abstract class Command {
     private void showTasks(TaskList tasks, Ui ui) {
         ui.showLine("Here are your tasks:");
         if (tasks.isEmpty()) {
-            ui.showLine("No tasks yet.");
+            ui.showLine("Don't have tasks ah bro.");
             return;
         }
         for (int i = 0; i < tasks.size(); i++) {
