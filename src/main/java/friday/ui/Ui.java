@@ -2,7 +2,9 @@ package friday.ui;
 
 import java.util.Scanner;
 
-/** Handles all console input and output for the Friday application. */
+/**
+ * Handles all console input and output for the Friday application.
+ */
 public class Ui {
     private static final String SEPARATOR =
             "____________________________________________________________";
@@ -17,12 +19,16 @@ public class Ui {
 
     private final Scanner scanner;
 
-    /** Creates a UI connected to the standard console input. */
+    /**
+     * Creates a UI connected to the standard console input.
+     */
     public Ui() {
         scanner = new Scanner(System.in);
     }
 
-    /** Displays the greeting shown when Friday starts. */
+    /**
+     * Displays the greeting shown when Friday starts.
+     */
     public void showWelcome() {
         showSeparator();
         System.out.print(BANNER);
@@ -31,29 +37,43 @@ public class Ui {
         showSeparator();
     }
 
-    /** Reads the next command, treating end-of-input as a request to exit. */
+    /**
+     * Reads the next command, treating end-of-input as a request to exit.
+     *
+     * @return Trimmed command, or {@code "bye"} at end-of-input.
+     */
     public String readCommand() {
         return scanner.hasNextLine() ? scanner.nextLine().trim() : "bye";
     }
 
-    /** Displays one line of text to the user. */
+    /**
+     * Displays one line of text to the user.
+     *
+     * @param message Message to display.
+     */
     public void showLine(String message) {
         System.out.println(message);
     }
 
-    /** Displays the standard separator between commands and responses. */
+    /**
+     * Displays the standard separator between commands and responses.
+     */
     public void showSeparator() {
         showLine(SEPARATOR);
     }
 
-    /** Displays the farewell shown when Friday exits. */
+    /**
+     * Displays the farewell shown when Friday exits.
+     */
     public void showGoodbye() {
         showSeparator();
         showLine("Bye. See you next time lah!");
         showSeparator();
     }
 
-    /** Releases the console input resource. */
+    /**
+     * Releases the console input resource.
+     */
     public void close() {
         scanner.close();
     }

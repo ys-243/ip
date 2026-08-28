@@ -1,10 +1,20 @@
 package friday.task;
 
-/** Represents a task occurring between a start and end time. */
+/**
+ * Represents a task occurring between a start and end time.
+ */
 public class Event extends Task {
+    /** Start value displayed for this event. */
     protected String start;
+    /** End value displayed for this event. */
     protected String end;
 
+    /**
+     * Creates an event from its description, start, and end values.
+     *
+     * @param event Fields containing the description, start, and end values.
+     * @throws IllegalArgumentException If a required field is absent or blank.
+     */
     public Event(String[] event) {
         super(requireField(event, 0, "description"), "[E]");
         String startValue = requireField(event, 1, "start");
@@ -16,12 +26,22 @@ public class Event extends Task {
         }
     }
 
+    /**
+     * Returns the display representation of this event.
+     *
+     * @return Display representation including the start and end values.
+     */
     @Override
     public String toString() {
         return super.toString()
                 + " (from: " + start + " to: " + end + ")";
     }
 
+    /**
+     * Returns the representation stored in the task data file.
+     *
+     * @return Escaped, comma-separated representation of the event.
+     */
     @Override
     public String toFileString() {
         return type + "," + (isDone ? "1" : "0")

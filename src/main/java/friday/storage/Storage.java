@@ -20,10 +20,18 @@ import friday.task.Todo;
     Event_task: type, isdone, description, from, to
  */
 
-/** Loads and saves tasks using a line-based text file. */
+/**
+ * Loads and saves tasks using a line-based text file.
+ */
 public class Storage {
     private final Path filePath;
 
+    /**
+     * Creates storage backed by the specified file.
+     *
+     * @param filePath Path of the task data file.
+     * @throws IllegalArgumentException If filePath is {@code null}.
+     */
     public Storage(Path filePath) {
         if (filePath == null) {
             throw new IllegalArgumentException("Storage path cannot be null.");
@@ -35,8 +43,8 @@ public class Storage {
      * Loads all valid tasks. Blank or malformed lines are ignored so that one
      * damaged record does not prevent the remaining tasks from loading.
      *
-     * @return tasks read from the file
-     * @throws IOException if the file exists but cannot be read
+     * @return Tasks read from the file.
+     * @throws IOException If the file exists but cannot be read.
      */
     public ArrayList<Task> load() throws IOException {
         //read file
@@ -81,8 +89,9 @@ public class Storage {
     /**
      * Saves all tasks, creating a missing parent directory when necessary.
      *
-     * @param tasks tasks to save
-     * @throws IOException if the file cannot be written
+     * @param tasks Tasks to save.
+     * @throws IllegalArgumentException If tasks is {@code null}.
+     * @throws IOException If the file cannot be written.
      */
     public void save(TaskList tasks) throws IOException {
         if (tasks == null) {

@@ -11,17 +11,48 @@ import friday.task.TaskList;
 import friday.task.Todo;
 import friday.ui.Ui;
 
-/** Represents and executes one command entered by the user. */
+/**
+ * Represents and executes one command entered by the user.
+ */
 public abstract class Command {
-    /** Command kinds recognized by the parser. */
+    /**
+     * Lists the command kinds recognized by the parser.
+     */
     public enum Type {
-        EMPTY, BYE, LIST, MARK, UNMARK, DELETE, TODO, EVENT, ON_DATE, DEADLINE, UNKNOWN
+        /** Empty user input. */
+        EMPTY,
+        /** Request to exit Friday. */
+        BYE,
+        /** Request to display all tasks. */
+        LIST,
+        /** Request to mark a task as completed. */
+        MARK,
+        /** Request to mark a task as incomplete. */
+        UNMARK,
+        /** Request to delete a task. */
+        DELETE,
+        /** Request to add a to-do task. */
+        TODO,
+        /** Request to add an event. */
+        EVENT,
+        /** Request to display deadlines on a date. */
+        ON_DATE,
+        /** Request to add a deadline. */
+        DEADLINE,
+        /** Input that does not match a supported command. */
+        UNKNOWN
     }
 
     private final Type type;
     private final String input;
 
-    /** Creates a typed command from input recognized by the parser. */
+    /**
+     * Creates a typed command from input recognized by the parser.
+     *
+     * @param type Kind of command to execute.
+     * @param input Complete command input.
+     * @throws IllegalArgumentException If type or input is {@code null}.
+     */
     protected Command(Type type, String input) {
         if (type == null || input == null) {
             throw new IllegalArgumentException("Command type and input cannot be null.");
@@ -30,12 +61,21 @@ public abstract class Command {
         this.input = input;
     }
 
-    /** Returns whether this command asks Friday to exit. */
+    /**
+     * Returns whether this command asks Friday to exit.
+     *
+     * @return {@code true} if the application should exit; otherwise {@code false}.
+     */
     public boolean isExit() {
         return false;
     }
 
-    /** Executes this command and reports its result without leaking command errors. */
+    /**
+     * Executes this command and reports its result without leaking command errors.
+     *
+     * @param tasks Task list to read or modify.
+     * @param ui User interface used to display the result.
+     */
     public void execute(TaskList tasks, Ui ui) {
         try {
             executeCommand(tasks, ui);
@@ -48,19 +88,17 @@ public abstract class Command {
 
     private void executeCommand(TaskList tasks, Ui ui) throws FridayException {
         switch (type) {
-        case EMPTY -> throw new FridayException("Enter a command leh.");
-        case LIST -> showTasks(tasks, ui);
-        case MARK -> markTask(tasks, ui);
-        case UNMARK -> unmarkTask(tasks, ui);
-        case DELETE -> deleteTask(tasks, ui);
-        case TODO -> addTodo(tasks, ui);
-        case EVENT -> addEvent(tasks, ui);
-        case ON_DATE -> showDeadlinesOnDate(tasks, ui);
-        case DEADLINE -> addDeadline(tasks, ui);
-        case UNKNOWN -> throw new FridayException("Eh? Sorry i don't understand that bro :-(");
-        case BYE -> {
-            // Exit commands are handled by Friday before execution.
-        }
+            case EMPTY -> throw new FridayException("Enter a command leh.");
+            case LIST -> showTasks(tasks, ui);
+            case MARK -> markTask(tasks, ui);
+            case UNMARK -> unmarkTask(tasks, ui);
+            case DELETE -> deleteTask(tasks, ui);
+            case TODO -> addTodo(tasks, ui);
+            case EVENT -> addEvent(tasks, ui);
+            case ON_DATE -> showDeadlinesOnDate(tasks, ui);
+            case DEADLINE -> addDeadline(tasks, ui);
+            case UNKNOWN -> throw new FridayException("Eh? Sorry i don't understand that bro :-(");
+            case BYE -> {} // Exit commands are handled by Friday before execution.
         }
     }
 

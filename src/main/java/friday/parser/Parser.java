@@ -3,8 +3,16 @@ package friday.parser;
 import friday.command.Command;
 import friday.command.ExitCommand;
 
-/** Converts raw user input into a recognized command. */
+/**
+ * Converts raw user input into a recognized command.
+ */
 public class Parser {
+    /**
+     * Creates a command parser.
+     */
+    public Parser() {
+    }
+
     /** Temporary concrete command used while individual commands are extracted. */
     private static class ParsedCommand extends Command {
         ParsedCommand(Type type, String input) {
@@ -16,8 +24,9 @@ public class Parser {
      * Identifies the command word while preserving the complete input for
      * command-specific argument validation.
      *
-     * @param input normalized input read from the user
-     * @return command representing the input
+     * @param input Input read from the user.
+     * @return Command representing the input.
+     * @throws IllegalArgumentException If input is {@code null}.
      */
     public static Command parse(String input) {
         if (input == null) {
