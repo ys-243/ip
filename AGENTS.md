@@ -40,6 +40,7 @@ After every code change, review and update the JUnit tests as needed so the chan
 
 ## Git
 
+For every proposed, created, or amended commit in this project, you MUST load and follow the project-specific `seedu-git-standard` skill at `.codex/skills/seedu-git-standard/SKILL.md`. Use the same skill whenever naming a branch.
+
 Use lightweight tags unless the user requests an annotated tag.
-When proposing or creating a commit message, include enough detail to explain the rationale for the change.
 Do not commit or push unless explicitly asked.
