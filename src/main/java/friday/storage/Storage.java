@@ -14,16 +14,11 @@ import friday.task.Task;
 import friday.task.TaskList;
 import friday.task.Todo;
 
-/* Format:
-    Todo_task: type,isdone, description,
-    Deadline_task: type, isdone, description, by
-    Event_task: type, isdone, description, from, to
- */
-
 /** Loads and saves tasks using a line-based text file. */
 public class Storage {
     private final Path filePath;
 
+    /** Creates storage that reads from and writes to the specified file. */
     public Storage(Path filePath) {
         if (filePath == null) {
             throw new IllegalArgumentException("Storage path cannot be null.");
@@ -35,13 +30,10 @@ public class Storage {
      * Loads all valid tasks. Blank or malformed lines are ignored so that one
      * damaged record does not prevent the remaining tasks from loading.
      *
-     * @return tasks read from the file
-     * @throws IOException if the file exists but cannot be read
+     * @return Tasks read from the file.
+     * @throws IOException If the file exists but cannot be read.
      */
     public ArrayList<Task> load() throws IOException {
-        //read file
-        //convert line to Task object
-        //return ArrayList
         ArrayList<Task> tasks = new ArrayList<>();
         if (!Files.exists(filePath)) {
             return tasks;
@@ -81,16 +73,14 @@ public class Storage {
     /**
      * Saves all tasks, creating a missing parent directory when necessary.
      *
-     * @param tasks tasks to save
-     * @throws IOException if the file cannot be written
+     * @param tasks Tasks to save.
+     * @throws IOException If the file cannot be written.
      */
     public void save(TaskList tasks) throws IOException {
         if (tasks == null) {
             throw new IllegalArgumentException("Task list cannot be null.");
         }
 
-        //convert each Task object to comma separated Strings
-        //write String to file
         ArrayList<String> lines = new ArrayList<>();
 
         for (Task task : tasks) {

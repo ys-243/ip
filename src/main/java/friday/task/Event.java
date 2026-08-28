@@ -5,10 +5,11 @@ public class Event extends Task {
     protected String start;
     protected String end;
 
-    public Event(String[] event) {
-        super(requireField(event, 0, "description"), "[E]");
-        String startValue = requireField(event, 1, "start");
-        String endValue = requireField(event, 2, "end");
+    /** Creates an event from its description, start, and end fields. */
+    public Event(String[] eventFields) {
+        super(requireField(eventFields, 0, "description"), "[E]");
+        String startValue = requireField(eventFields, 1, "start");
+        String endValue = requireField(eventFields, 2, "end");
         start = startValue.startsWith("from ") ? startValue.substring(5).trim() : startValue;
         end = endValue.startsWith("to ") ? endValue.substring(3).trim() : endValue;
         if (start.isBlank() || end.isBlank()) {
@@ -25,9 +26,9 @@ public class Event extends Task {
     @Override
     public String toFileString() {
         return type + "," + (isDone ? "1" : "0")
-                    + "," + escapeFileField(description)
-                    + "," + escapeFileField(start)
-                    + "," + escapeFileField(end);
+                + "," + escapeFileField(description)
+                + "," + escapeFileField(start)
+                + "," + escapeFileField(end);
     }
 
     private static String requireField(String[] fields, int index, String name) {

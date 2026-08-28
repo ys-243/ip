@@ -11,6 +11,11 @@ import friday.ui.Ui;
 
 /** Starts and coordinates the Friday chatbot application. */
 public class Friday {
+    /**
+     * Starts the Friday application.
+     *
+     * @param args Command-line arguments, which are not used.
+     */
     public static void main(String[] args) {
         Ui ui = new Ui();
         Storage storage = new Storage(Path.of("data", "tasks.txt"));

@@ -13,11 +13,11 @@ public class Parser {
     }
 
     /**
-     * Identifies the command word while preserving the complete input for
-     * command-specific argument validation.
+     * Returns a command identified from the command word while preserving the
+     * complete input for command-specific argument validation.
      *
-     * @param input normalized input read from the user
-     * @return command representing the input
+     * @param input Normalized input read from the user.
+     * @return Command representing the input.
      */
     public static Command parse(String input) {
         if (input == null) {

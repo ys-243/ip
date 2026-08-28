@@ -3,6 +3,7 @@ package friday.task;
 /** Represents a task without a date or time. */
 public class Todo extends Task {
 
+    /** Creates an undone task without a date or time. */
     public Todo(String description) {
         super(description, "[T]");
     }
