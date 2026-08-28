@@ -9,8 +9,21 @@ import friday.storage.Storage;
 import friday.task.TaskList;
 import friday.ui.Ui;
 
-/** Starts and coordinates the Friday chatbot application. */
+/**
+ * Starts and coordinates the Friday chatbot application.
+ */
 public class Friday {
+    /**
+     * Creates a Friday application entry point.
+     */
+    public Friday() {
+    }
+
+    /**
+     * Starts Friday's command loop and loads and saves the user's tasks.
+     *
+     * @param args Command-line arguments, which are not used.
+     */
     public static void main(String[] args) {
         Ui ui = new Ui();
         Storage storage = new Storage(Path.of("data", "tasks.txt"));
