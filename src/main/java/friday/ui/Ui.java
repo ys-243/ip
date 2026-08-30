@@ -1,5 +1,6 @@
 package friday.ui;
 
+import java.io.PrintStream;
 import java.util.Scanner;
 
 /**
@@ -18,12 +19,28 @@ public class Ui {
             + "                         |___/ \n";
 
     private final Scanner scanner;
+    private final PrintStream output;
 
     /**
      * Creates a UI connected to the standard console input.
      */
     public Ui() {
         scanner = new Scanner(System.in);
+        output = System.out;
+    }
+
+    /**
+     * Creates an output-only UI for a graphical interface to collect responses.
+     *
+     * @param output Destination for Friday's responses.
+     * @throws IllegalArgumentException If output is {@code null}.
+     */
+    public Ui(PrintStream output) {
+        if (output == null) {
+            throw new IllegalArgumentException("Output cannot be null.");
+        }
+        scanner = null;
+        this.output = output;
     }
 
     /**
@@ -43,6 +60,9 @@ public class Ui {
      * @return Trimmed command, or {@code "bye"} at end-of-input.
      */
     public String readCommand() {
+        if (scanner == null) {
+            throw new IllegalStateException("This UI does not support console input.");
+        }
         return scanner.hasNextLine() ? scanner.nextLine().trim() : "bye";
     }
 
@@ -52,7 +72,7 @@ public class Ui {
      * @param message Message to display.
      */
     public void showLine(String message) {
-        System.out.println(message);
+        output.println(message);
     }
 
     /**
@@ -75,6 +95,8 @@ public class Ui {
      * Releases the console input resource.
      */
     public void close() {
-        scanner.close();
+        if (scanner != null) {
+            scanner.close();
+        }
     }
 }
