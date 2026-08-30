@@ -27,7 +27,7 @@ class DeadlineTest {
 
     @Test
     void constructor_invalidDate_exceptionThrown() {
-        assertThrows(DateTimeParseException.class,
-                () -> new Deadline(new String[] {"submit report", "30-08-2026"}));
+        assertThrows(DateTimeParseException.class, () ->
+                new Deadline(new String[] {"submit report", "30-08-2026"}));
     }
 }
