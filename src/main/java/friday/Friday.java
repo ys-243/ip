@@ -16,7 +16,8 @@ import friday.ui.Ui;
  * Coordinates Friday's commands, tasks, storage, and user interfaces.
  */
 public class Friday {
-    private static final Path DEFAULT_STORAGE_PATH = Path.of("data", "tasks.txt");
+    private static final String STORAGE_PATH_PROPERTY = "friday.storage.path";
+    private static final String USER_HOME_STORAGE_PROPERTY = "friday.storage.inUserHome";
 
     private final Storage storage;
     private final TaskList tasks;
@@ -25,7 +26,7 @@ public class Friday {
      * Creates Friday using the default task storage file.
      */
     public Friday() {
-        this(DEFAULT_STORAGE_PATH);
+        this(getDefaultStoragePath());
     }
 
     /**
@@ -96,5 +97,16 @@ public class Friday {
         } catch (IOException exception) {
             ui.showLine("Could not save tasks: " + exception.getMessage());
         }
+    }
+
+    private static Path getDefaultStoragePath() {
+        String configuredPath = System.getProperty(STORAGE_PATH_PROPERTY);
+        if (configuredPath != null && !configuredPath.isBlank()) {
+            return Path.of(configuredPath);
+        }
+        if (Boolean.getBoolean(USER_HOME_STORAGE_PROPERTY)) {
+            return Path.of(System.getProperty("user.home"), ".friday", "tasks.txt");
+        }
+        return Path.of("data", "tasks.txt");
     }
 }

@@ -69,6 +69,36 @@ shadowJar {
     archiveFileName = 'friday.jar'
 }
 
+tasks.register('packageMacApp', Exec) {
+    dependsOn shadowJar
+    description = 'Packages Friday as a macOS application image.'
+    group = 'distribution'
+
+    def packageDirectory = layout.buildDirectory.dir('package')
+    def configuredStoragePath = providers.gradleProperty('fridayStoragePath').orNull
+    def storageJavaOption = configuredStoragePath == null
+            ? '-Dfriday.storage.inUserHome=true'
+            : "-Dfriday.storage.path=${configuredStoragePath}"
+    inputs.file(layout.buildDirectory.file('libs/friday.jar'))
+    inputs.property('storageJavaOption', storageJavaOption)
+    outputs.dir(packageDirectory)
+
+    doFirst {
+        delete(packageDirectory)
+    }
+
+    commandLine "${System.getProperty('java.home')}/bin/jpackage",
+            '--type', 'app-image',
+            '--dest', packageDirectory.get().asFile,
+            '--input', layout.buildDirectory.dir('libs').get().asFile,
+            '--name', 'Friday',
+            '--main-jar', 'friday.jar',
+            '--main-class', 'friday.Launcher',
+            '--java-options', '--enable-native-access=javafx.graphics',
+            '--java-options', storageJavaOption,
+            '--mac-package-identifier', 'org.seeducation.friday'
+}
+
 run {
     standardInput = System.in
 }
