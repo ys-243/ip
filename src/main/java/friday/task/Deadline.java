@@ -11,9 +11,14 @@ public class Deadline extends Task {
 
     protected LocalDate end;
 
-    public Deadline(String[] Deadline) {
-        super(requireField(Deadline, 0, "description"), "[D]");
-        String endValue = requireField(Deadline, 1, "deadline");
+    /**
+     * Creates a deadline task from its description and due date.
+     *
+     * @param deadlineFields description followed by a date in {@code yyyy-MM-dd} format
+     */
+    public Deadline(String[] deadlineFields) {
+        super(requireField(deadlineFields, 0, "description"), "[D]");
+        String endValue = requireField(deadlineFields, 1, "deadline");
         String dateText = endValue.startsWith("by ") ? endValue.substring(3).trim() : endValue;
         end = LocalDate.parse(dateText);
     }

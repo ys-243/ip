@@ -5,6 +5,11 @@ public class Event extends Task {
     protected String start;
     protected String end;
 
+    /**
+     * Creates an event task from its description, start time, and end time.
+     *
+     * @param event description, start time, and end time
+     */
     public Event(String[] event) {
         super(requireField(event, 0, "description"), "[E]");
         String startValue = requireField(event, 1, "start");

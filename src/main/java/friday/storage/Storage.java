@@ -24,6 +24,11 @@ import friday.task.Todo;
 public class Storage {
     private final Path filePath;
 
+    /**
+     * Creates storage backed by the given file path.
+     *
+     * @param filePath path of the task data file
+     */
     public Storage(Path filePath) {
         if (filePath == null) {
             throw new IllegalArgumentException("Storage path cannot be null.");

@@ -24,7 +24,7 @@ class EventTest {
 
     @Test
     void constructor_missingEnd_exceptionThrown() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new Event(new String[] {"meeting", "2pm"}));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Event(new String[] {"meeting", "2pm"}));
     }
 }

@@ -6,6 +6,12 @@ public class Task {
     protected boolean isDone;
     protected String type;
 
+    /**
+     * Creates an incomplete task with the given description and type marker.
+     *
+     * @param description task description
+     * @param type task type marker used when displaying and saving the task
+     */
     public Task(String description, String type) {
         if (description == null || description.isBlank()) {
             throw new IllegalArgumentException("Task description cannot be empty.");
@@ -35,6 +41,11 @@ public class Task {
         return type + (isDone ? "[X] " : "[ ] ") + description;
     }
 
+    /**
+     * Converts this task to its line-based storage representation.
+     *
+     * @return serialized task suitable for the save file
+     */
     public String toFileString() {
         return type + "," + (isDone ? "1" : "0")
                     + "," + escapeFileField(description);

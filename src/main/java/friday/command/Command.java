@@ -49,20 +49,20 @@ public abstract class Command {
 
     private void executeCommand(TaskList tasks, Ui ui) throws FridayException {
         switch (type) {
-        case EMPTY -> throw new FridayException("Enter a command leh.");
-        case LIST -> showTasks(tasks, ui);
-        case MARK -> markTask(tasks, ui);
-        case UNMARK -> unmarkTask(tasks, ui);
-        case DELETE -> deleteTask(tasks, ui);
-        case FIND -> findTasks(tasks, ui);
-        case TODO -> addTodo(tasks, ui);
-        case EVENT -> addEvent(tasks, ui);
-        case ON_DATE -> showDeadlinesOnDate(tasks, ui);
-        case DEADLINE -> addDeadline(tasks, ui);
-        case UNKNOWN -> throw new FridayException("Eh? Sorry i don't understand that bro :-(");
-        case BYE -> {
+            case EMPTY -> throw new FridayException("Enter a command leh.");
+            case LIST -> showTasks(tasks, ui);
+            case MARK -> markTask(tasks, ui);
+            case UNMARK -> unmarkTask(tasks, ui);
+            case DELETE -> deleteTask(tasks, ui);
+            case FIND -> findTasks(tasks, ui);
+            case TODO -> addTodo(tasks, ui);
+            case EVENT -> addEvent(tasks, ui);
+            case ON_DATE -> showDeadlinesOnDate(tasks, ui);
+            case DEADLINE -> addDeadline(tasks, ui);
+            case BYE -> {
             // Exit commands are handled by Friday before execution.
-        }
+            }
+            default -> throw new FridayException("Eh? Sorry i don't understand that bro :-(");
         }
     }
 
