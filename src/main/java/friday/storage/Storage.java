@@ -75,6 +75,10 @@ public class Storage {
                 if (task == null) {
                     continue;
                 }
+                assert parts.size() >= 3
+                        : "A created task must come from a complete storage record";
+                assert parts.get(1).equals("0") || parts.get(1).equals("1")
+                        : "A created task must have a validated completion flag";
                 if (parts.get(1).equals("1")) {
                     task.markAsDone();
                 }
