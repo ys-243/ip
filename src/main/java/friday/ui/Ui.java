@@ -48,7 +48,7 @@ public class Ui {
      */
     public void showWelcome() {
         showSeparator();
-        System.out.print(BANNER);
+        output.print(BANNER);
         showLine("Hello! I'm Friday.");
         showLine("What you want ah?");
         showSeparator();
