@@ -147,20 +147,38 @@ public class Storage {
         }
 
         return switch (parts.get(TASK_TYPE_INDEX)) {
-            case TODO_TYPE -> parts.size() == TODO_FIELD_COUNT
-                    ? new Todo(parts.get(TASK_DESCRIPTION_INDEX)) : null;
-            case DEADLINE_TYPE -> parts.size() == DEADLINE_FIELD_COUNT
-                    ? new Deadline(new String[] {
-                        parts.get(TASK_DESCRIPTION_INDEX), parts.get(DEADLINE_DATE_INDEX)
-                    }) : null;
-            case EVENT_TYPE -> parts.size() == EVENT_FIELD_COUNT
-                    ? new Event(new String[] {
-                        parts.get(TASK_DESCRIPTION_INDEX),
-                        parts.get(EVENT_START_INDEX),
-                        parts.get(EVENT_END_INDEX)
-                    }) : null;
+            case TODO_TYPE -> createTodo(parts);
+            case DEADLINE_TYPE -> createDeadline(parts);
+            case EVENT_TYPE -> createEvent(parts);
             default -> null;
         };
+    }
+
+    private Todo createTodo(List<String> parts) {
+        if (parts.size() != TODO_FIELD_COUNT) {
+            return null;
+        }
+        return new Todo(parts.get(TASK_DESCRIPTION_INDEX));
+    }
+
+    private Deadline createDeadline(List<String> parts) {
+        if (parts.size() != DEADLINE_FIELD_COUNT) {
+            return null;
+        }
+        return new Deadline(new String[] {
+            parts.get(TASK_DESCRIPTION_INDEX), parts.get(DEADLINE_DATE_INDEX)
+        });
+    }
+
+    private Event createEvent(List<String> parts) {
+        if (parts.size() != EVENT_FIELD_COUNT) {
+            return null;
+        }
+        return new Event(new String[] {
+            parts.get(TASK_DESCRIPTION_INDEX),
+            parts.get(EVENT_START_INDEX),
+            parts.get(EVENT_END_INDEX)
+        });
     }
 
     /** Parses fields while supporting escaped commas, slashes, and line breaks. */
