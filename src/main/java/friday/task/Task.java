@@ -4,12 +4,9 @@ package friday.task;
  * Represents a task stored by the Friday application.
  */
 public class Task {
-    /** Human-readable description of this task. */
-    protected String description;
-    /** Whether this task has been completed. */
-    protected boolean isDone;
-    /** Marker identifying this task's type. */
-    protected String type;
+    private final String description;
+    private final String type;
+    private boolean isDone;
 
     /**
      * Creates a task with the specified description and type marker.
@@ -80,5 +77,24 @@ public class Task {
                 .replace(",", "\\,")
                 .replace("\n", "\\n")
                 .replace("\r", "\\r");
+    }
+
+    /**
+     * Returns a required task field after verifying that it is present and nonblank.
+     *
+     * @param fields Fields supplied to a task constructor.
+     * @param index Index of the required field.
+     * @param taskType Name of the task type used in the error message.
+     * @param fieldName Name of the required field used in the error message.
+     * @return Validated field value.
+     * @throws IllegalArgumentException If the field is absent or blank.
+     */
+    protected static String requireField(String[] fields, int index, String taskType,
+            String fieldName) {
+        if (fields == null || fields.length <= index || fields[index] == null
+                || fields[index].isBlank()) {
+            throw new IllegalArgumentException(taskType + " " + fieldName + " cannot be empty.");
+        }
+        return fields[index];
     }
 }

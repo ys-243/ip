@@ -6,11 +6,8 @@ import friday.command.ExitCommand;
 /**
  * Converts raw user input into a recognized command.
  */
-public class Parser {
-    /**
-     * Creates a command parser.
-     */
-    public Parser() {
+public final class Parser {
+    private Parser() {
     }
 
     /** Temporary concrete command used while individual commands are extracted. */

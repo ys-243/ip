@@ -4,10 +4,11 @@ package friday.task;
  * Represents a task occurring between a start and end time.
  */
 public class Event extends Task {
-    /** Start value displayed for this event. */
-    protected String start;
-    /** End value displayed for this event. */
-    protected String end;
+    private static final String START_PREFIX = "from ";
+    private static final String END_PREFIX = "to ";
+
+    private final String start;
+    private final String end;
 
     /**
      * Creates an event from its description, start, and end values.
@@ -16,11 +17,15 @@ public class Event extends Task {
      * @throws IllegalArgumentException If a required field is absent or blank.
      */
     public Event(String[] event) {
-        super(requireField(event, 0, "description"), "[E]");
-        String startValue = requireField(event, 1, "start");
-        String endValue = requireField(event, 2, "end");
-        start = startValue.startsWith("from ") ? startValue.substring(5).trim() : startValue;
-        end = endValue.startsWith("to ") ? endValue.substring(3).trim() : endValue;
+        super(requireField(event, 0, "Event", "description"), "[E]");
+        String startValue = requireField(event, 1, "Event", "start");
+        String endValue = requireField(event, 2, "Event", "end");
+        start = startValue.startsWith(START_PREFIX)
+                ? startValue.substring(START_PREFIX.length()).trim()
+                : startValue;
+        end = endValue.startsWith(END_PREFIX)
+                ? endValue.substring(END_PREFIX.length()).trim()
+                : endValue;
         if (start.isBlank() || end.isBlank()) {
             throw new IllegalArgumentException("Event start and end cannot be empty.");
         }
@@ -46,17 +51,9 @@ public class Event extends Task {
      */
     @Override
     public String toFileString() {
-        return type + "," + (isDone ? "1" : "0")
-                    + "," + escapeFileField(description)
-                    + "," + escapeFileField(start)
-                    + "," + escapeFileField(end);
+        return super.toFileString()
+                + "," + escapeFileField(start)
+                + "," + escapeFileField(end);
     }
 
-    private static String requireField(String[] fields, int index, String name) {
-        if (fields == null || fields.length <= index || fields[index] == null
-                || fields[index].isBlank()) {
-            throw new IllegalArgumentException("Event " + name + " cannot be empty.");
-        }
-        return fields[index];
-    }
 }

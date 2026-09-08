@@ -16,6 +16,10 @@ import friday.ui.Ui;
  * Represents and executes one command entered by the user.
  */
 public abstract class Command {
+    private static final String DEADLINE_SEPARATOR = "/by ";
+    private static final String EVENT_START_SEPARATOR = "/from ";
+    private static final String EVENT_END_SEPARATOR = "/to ";
+
     /**
      * Lists the command kinds recognized by the parser.
      */
@@ -185,15 +189,17 @@ public abstract class Command {
         if (arguments.isEmpty()) {
             throw new FridayException("what event ah?");
         }
-        int fromIndex = arguments.indexOf("/from ");
-        int toIndex = arguments.indexOf("/to ", fromIndex + 6);
+        int fromIndex = arguments.indexOf(EVENT_START_SEPARATOR);
+        int toIndex = arguments.indexOf(
+                EVENT_END_SEPARATOR, fromIndex + EVENT_START_SEPARATOR.length());
         if (fromIndex < 0 || toIndex < 0) {
             throw new FridayException(
                     "ARE YOU DONE?! write like this lah: event DESCRIPTION /from START /to END");
         }
         String description = arguments.substring(0, fromIndex).trim();
-        String start = arguments.substring(fromIndex + 6, toIndex).trim();
-        String end = arguments.substring(toIndex + 4).trim();
+        String start = arguments.substring(
+                fromIndex + EVENT_START_SEPARATOR.length(), toIndex).trim();
+        String end = arguments.substring(toIndex + EVENT_END_SEPARATOR.length()).trim();
         if (description.isEmpty() || start.isEmpty() || end.isEmpty()) {
             throw new FridayException(
                     "Tolong, an event's description, start, and end cannot be empty lei.");
@@ -234,12 +240,12 @@ public abstract class Command {
         if (arguments.isEmpty()) {
             throw new FridayException("What thing got deadline ah?");
         }
-        int byIndex = arguments.indexOf("/by ");
+        int byIndex = arguments.indexOf(DEADLINE_SEPARATOR);
         if (byIndex < 0) {
             throw new FridayException("Tolong, write this format: deadline DESCRIPTION /by DATE");
         }
         String description = arguments.substring(0, byIndex).trim();
-        String date = arguments.substring(byIndex + 4).trim();
+        String date = arguments.substring(byIndex + DEADLINE_SEPARATOR.length()).trim();
         if (description.isEmpty() || date.isEmpty()) {
             throw new FridayException("Deadline's description and date must fill up lei.");
         }

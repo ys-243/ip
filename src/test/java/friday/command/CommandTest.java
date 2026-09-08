@@ -77,6 +77,16 @@ class CommandTest {
     }
 
     @Test
+    void execute_eventCommand_addsEventWithStartAndEnd() {
+        TaskList tasks = new TaskList();
+
+        Parser.parse("event project meeting /from 2pm /to 3pm")
+                .execute(tasks, new RecordingUi());
+
+        assertEquals("[E][ ] project meeting (from: 2pm to: 3pm)", tasks.get(0).toString());
+    }
+
+    @Test
     void execute_findCommand_displaysAllMatchingTasks() {
         TaskList tasks = new TaskList();
         tasks.add(new Todo("read book"));

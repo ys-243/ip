@@ -8,23 +8,25 @@ import java.util.Locale;
  * Represents a task that must be completed by a specified date.
  */
 public class Deadline extends Task {
+    private static final String DEADLINE_PREFIX = "by ";
     private static final DateTimeFormatter DISPLAY_FORMAT =
             DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
 
-    /** Due date of this deadline. */
-    protected LocalDate end;
+    private final LocalDate end;
 
     /**
      * Creates a deadline task from its description and due date.
      *
      * @param deadline Fields containing the description and an ISO-8601 due date.
      * @throws IllegalArgumentException If a required field is absent or blank.
-     * @throws java.time.format.DateTimeParseException If the due date is invalid.
+    * @throws java.time.format.DateTimeParseException If the due date is invalid.
      */
     public Deadline(String[] deadline) {
-        super(requireField(deadline, 0, "description"), "[D]");
-        String endValue = requireField(deadline, 1, "deadline");
-        String dateText = endValue.startsWith("by ") ? endValue.substring(3).trim() : endValue;
+        super(requireField(deadline, 0, "Deadline", "description"), "[D]");
+        String endValue = requireField(deadline, 1, "Deadline", "deadline");
+        String dateText = endValue.startsWith(DEADLINE_PREFIX)
+                ? endValue.substring(DEADLINE_PREFIX.length()).trim()
+                : endValue;
         end = LocalDate.parse(dateText);
     }
 
@@ -46,9 +48,7 @@ public class Deadline extends Task {
      */
     @Override
     public String toFileString() {
-        return type + "," + (isDone ? "1" : "0")
-                    + "," + escapeFileField(description)
-                    + "," + escapeFileField(end.toString());
+        return super.toFileString() + "," + escapeFileField(end.toString());
     }
 
     /**
@@ -58,13 +58,5 @@ public class Deadline extends Task {
      */
     public LocalDate getDeadlineDate() {
         return end;
-    }
-
-    private static String requireField(String[] fields, int index, String name) {
-        if (fields == null || fields.length <= index || fields[index] == null
-                || fields[index].isBlank()) {
-            throw new IllegalArgumentException("Deadline " + name + " cannot be empty.");
-        }
-        return fields[index];
     }
 }

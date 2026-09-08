@@ -1,6 +1,7 @@
 package friday.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -26,5 +27,19 @@ class UiTest {
         } finally {
             System.setOut(originalOutput);
         }
+    }
+
+    @Test
+    void showWelcome_outputOnlyUi_printsBannerAndGreetingToConfiguredOutput() {
+        ByteArrayOutputStream capturedOutput = new ByteArrayOutputStream();
+        PrintStream output = new PrintStream(capturedOutput, true, StandardCharsets.UTF_8);
+        Ui ui = new Ui(output);
+
+        ui.showWelcome();
+
+        String welcomeMessage = capturedOutput.toString(StandardCharsets.UTF_8);
+        assertTrue(welcomeMessage.contains(" ______    _     _"));
+        assertTrue(welcomeMessage.contains("Hello! I'm Friday."));
+        assertTrue(welcomeMessage.contains("What you want ah?"));
     }
 }

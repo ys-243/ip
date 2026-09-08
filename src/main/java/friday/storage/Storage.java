@@ -14,16 +14,25 @@ import friday.task.Task;
 import friday.task.TaskList;
 import friday.task.Todo;
 
-/* Format:
-    Todo_task: type,isdone, description,
-    Deadline_task: type, isdone, description, by
-    Event_task: type, isdone, description, from, to
- */
-
 /**
  * Loads and saves tasks using a line-based text file.
  */
 public class Storage {
+    private static final int TASK_TYPE_INDEX = 0;
+    private static final int TASK_STATUS_INDEX = 1;
+    private static final int TASK_DESCRIPTION_INDEX = 2;
+    private static final int DEADLINE_DATE_INDEX = 3;
+    private static final int EVENT_START_INDEX = 3;
+    private static final int EVENT_END_INDEX = 4;
+    private static final int TODO_FIELD_COUNT = 3;
+    private static final int DEADLINE_FIELD_COUNT = 4;
+    private static final int EVENT_FIELD_COUNT = 5;
+    private static final String TODO_TYPE = "[T]";
+    private static final String DEADLINE_TYPE = "[D]";
+    private static final String EVENT_TYPE = "[E]";
+    private static final String INCOMPLETE_STATUS = "0";
+    private static final String COMPLETE_STATUS = "1";
+
     private final Path filePath;
 
     /**
@@ -45,7 +54,7 @@ public class Storage {
      *
      * @return Tasks read from the file.
      * @throws IOException If the file exists but cannot be read.
-     */
+    */
     public ArrayList<Task> load() throws IOException {
         //read file
         //convert line to Task object
@@ -82,9 +91,9 @@ public class Storage {
                 if (parts.get(1).equals("1")) {
                     task.markAsDone();
                 }
+            Task task = parseTask(line);
+            if (task != null) {
                 tasks.add(task);
-            } catch (IllegalArgumentException | DateTimeParseException exception) {
-                // Ignore malformed records and continue loading the usable ones.
             }
         }
         return tasks;
@@ -102,8 +111,6 @@ public class Storage {
             throw new IllegalArgumentException("Task list cannot be null.");
         }
 
-        //convert each Task object to comma separated Strings
-        //write String to file
         ArrayList<String> lines = new ArrayList<>();
 
         for (Task task : tasks) {
@@ -120,19 +127,63 @@ public class Storage {
         Files.write(filePath, lines, StandardCharsets.UTF_8);
     }
 
+    private Task parseTask(String line) {
+        try {
+            List<String> parts = parseLine(line);
+            Task task = createTask(parts);
+            if (task != null && parts.get(TASK_STATUS_INDEX).equals(COMPLETE_STATUS)) {
+                task.markAsDone();
+            }
+            return task;
+        } catch (IllegalArgumentException | DateTimeParseException exception) {
+            // Ignore malformed records so that the remaining tasks can still be loaded.
+            return null;
+        }
+    }
+
     private Task createTask(List<String> parts) {
-        if (parts.size() < 3 || (!parts.get(1).equals("0") && !parts.get(1).equals("1"))) {
+        if (parts.size() < TODO_FIELD_COUNT) {
             return null;
         }
 
-        return switch (parts.get(0)) {
-            case "[T]" -> parts.size() == 3 ? new Todo(parts.get(2)) : null;
-            case "[D]" -> parts.size() == 4
-                    ? new Deadline(new String[] {parts.get(2), parts.get(3)}) : null;
-            case "[E]" -> parts.size() == 5
-                    ? new Event(new String[] {parts.get(2), parts.get(3), parts.get(4)}) : null;
+        String status = parts.get(TASK_STATUS_INDEX);
+        if (!status.equals(INCOMPLETE_STATUS) && !status.equals(COMPLETE_STATUS)) {
+            return null;
+        }
+
+        return switch (parts.get(TASK_TYPE_INDEX)) {
+            case TODO_TYPE -> createTodo(parts);
+            case DEADLINE_TYPE -> createDeadline(parts);
+            case EVENT_TYPE -> createEvent(parts);
             default -> null;
         };
+    }
+
+    private Todo createTodo(List<String> parts) {
+        if (parts.size() != TODO_FIELD_COUNT) {
+            return null;
+        }
+        return new Todo(parts.get(TASK_DESCRIPTION_INDEX));
+    }
+
+    private Deadline createDeadline(List<String> parts) {
+        if (parts.size() != DEADLINE_FIELD_COUNT) {
+            return null;
+        }
+        return new Deadline(new String[] {
+            parts.get(TASK_DESCRIPTION_INDEX), parts.get(DEADLINE_DATE_INDEX)
+        });
+    }
+
+    private Event createEvent(List<String> parts) {
+        if (parts.size() != EVENT_FIELD_COUNT) {
+            return null;
+        }
+        return new Event(new String[] {
+            parts.get(TASK_DESCRIPTION_INDEX),
+            parts.get(EVENT_START_INDEX),
+            parts.get(EVENT_END_INDEX)
+        });
     }
 
     /** Parses fields while supporting escaped commas, slashes, and line breaks. */
