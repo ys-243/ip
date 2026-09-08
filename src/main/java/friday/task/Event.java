@@ -14,9 +14,9 @@ public class Event extends Task {
      * @throws IllegalArgumentException If a required field is absent or blank.
      */
     public Event(String[] event) {
-        super(requireField(event, 0, "description"), "[E]");
-        String startValue = requireField(event, 1, "start");
-        String endValue = requireField(event, 2, "end");
+        super(requireField(event, 0, "Event", "description"), "[E]");
+        String startValue = requireField(event, 1, "Event", "start");
+        String endValue = requireField(event, 2, "Event", "end");
         start = startValue.startsWith("from ") ? startValue.substring(5).trim() : startValue;
         end = endValue.startsWith("to ") ? endValue.substring(3).trim() : endValue;
         if (start.isBlank() || end.isBlank()) {
@@ -47,11 +47,4 @@ public class Event extends Task {
                 + "," + escapeFileField(end);
     }
 
-    private static String requireField(String[] fields, int index, String name) {
-        if (fields == null || fields.length <= index || fields[index] == null
-                || fields[index].isBlank()) {
-            throw new IllegalArgumentException("Event " + name + " cannot be empty.");
-        }
-        return fields[index];
-    }
 }

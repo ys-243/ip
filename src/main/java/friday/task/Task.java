@@ -78,4 +78,23 @@ public class Task {
                 .replace("\n", "\\n")
                 .replace("\r", "\\r");
     }
+
+    /**
+     * Returns a required task field after verifying that it is present and nonblank.
+     *
+     * @param fields Fields supplied to a task constructor.
+     * @param index Index of the required field.
+     * @param taskType Name of the task type used in the error message.
+     * @param fieldName Name of the required field used in the error message.
+     * @return Validated field value.
+     * @throws IllegalArgumentException If the field is absent or blank.
+     */
+    protected static String requireField(String[] fields, int index, String taskType,
+            String fieldName) {
+        if (fields == null || fields.length <= index || fields[index] == null
+                || fields[index].isBlank()) {
+            throw new IllegalArgumentException(taskType + " " + fieldName + " cannot be empty.");
+        }
+        return fields[index];
+    }
 }

@@ -18,11 +18,11 @@ public class Deadline extends Task {
      *
      * @param deadline Fields containing the description and an ISO-8601 due date.
      * @throws IllegalArgumentException If a required field is absent or blank.
-     * @throws java.time.format.DateTimeParseException If the due date is invalid.
+    * @throws java.time.format.DateTimeParseException If the due date is invalid.
      */
     public Deadline(String[] deadline) {
-        super(requireField(deadline, 0, "description"), "[D]");
-        String endValue = requireField(deadline, 1, "deadline");
+        super(requireField(deadline, 0, "Deadline", "description"), "[D]");
+        String endValue = requireField(deadline, 1, "Deadline", "deadline");
         String dateText = endValue.startsWith("by ") ? endValue.substring(3).trim() : endValue;
         end = LocalDate.parse(dateText);
     }
@@ -55,13 +55,5 @@ public class Deadline extends Task {
      */
     public LocalDate getDeadlineDate() {
         return end;
-    }
-
-    private static String requireField(String[] fields, int index, String name) {
-        if (fields == null || fields.length <= index || fields[index] == null
-                || fields[index].isBlank()) {
-            throw new IllegalArgumentException("Deadline " + name + " cannot be empty.");
-        }
-        return fields[index];
     }
 }
