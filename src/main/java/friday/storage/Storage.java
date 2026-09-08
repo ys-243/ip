@@ -24,6 +24,21 @@ import friday.task.Todo;
  * Loads and saves tasks using a line-based text file.
  */
 public class Storage {
+    private static final int TASK_TYPE_INDEX = 0;
+    private static final int TASK_STATUS_INDEX = 1;
+    private static final int TASK_DESCRIPTION_INDEX = 2;
+    private static final int DEADLINE_DATE_INDEX = 3;
+    private static final int EVENT_START_INDEX = 3;
+    private static final int EVENT_END_INDEX = 4;
+    private static final int TODO_FIELD_COUNT = 3;
+    private static final int DEADLINE_FIELD_COUNT = 4;
+    private static final int EVENT_FIELD_COUNT = 5;
+    private static final String TODO_TYPE = "[T]";
+    private static final String DEADLINE_TYPE = "[D]";
+    private static final String EVENT_TYPE = "[E]";
+    private static final String INCOMPLETE_STATUS = "0";
+    private static final String COMPLETE_STATUS = "1";
+
     private final Path filePath;
 
     /**
@@ -111,7 +126,7 @@ public class Storage {
         try {
             List<String> parts = parseLine(line);
             Task task = createTask(parts);
-            if (task != null && parts.get(1).equals("1")) {
+            if (task != null && parts.get(TASK_STATUS_INDEX).equals(COMPLETE_STATUS)) {
                 task.markAsDone();
             }
             return task;
@@ -122,16 +137,28 @@ public class Storage {
     }
 
     private Task createTask(List<String> parts) {
-        if (parts.size() < 3 || (!parts.get(1).equals("0") && !parts.get(1).equals("1"))) {
+        if (parts.size() < TODO_FIELD_COUNT) {
             return null;
         }
 
-        return switch (parts.get(0)) {
-            case "[T]" -> parts.size() == 3 ? new Todo(parts.get(2)) : null;
-            case "[D]" -> parts.size() == 4
-                    ? new Deadline(new String[] {parts.get(2), parts.get(3)}) : null;
-            case "[E]" -> parts.size() == 5
-                    ? new Event(new String[] {parts.get(2), parts.get(3), parts.get(4)}) : null;
+        String status = parts.get(TASK_STATUS_INDEX);
+        if (!status.equals(INCOMPLETE_STATUS) && !status.equals(COMPLETE_STATUS)) {
+            return null;
+        }
+
+        return switch (parts.get(TASK_TYPE_INDEX)) {
+            case TODO_TYPE -> parts.size() == TODO_FIELD_COUNT
+                    ? new Todo(parts.get(TASK_DESCRIPTION_INDEX)) : null;
+            case DEADLINE_TYPE -> parts.size() == DEADLINE_FIELD_COUNT
+                    ? new Deadline(new String[] {
+                        parts.get(TASK_DESCRIPTION_INDEX), parts.get(DEADLINE_DATE_INDEX)
+                    }) : null;
+            case EVENT_TYPE -> parts.size() == EVENT_FIELD_COUNT
+                    ? new Event(new String[] {
+                        parts.get(TASK_DESCRIPTION_INDEX),
+                        parts.get(EVENT_START_INDEX),
+                        parts.get(EVENT_END_INDEX)
+                    }) : null;
             default -> null;
         };
     }
