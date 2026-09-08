@@ -69,18 +69,9 @@ public class Storage {
                 continue;
             }
 
-            try {
-                List<String> parts = parseLine(line);
-                Task task = createTask(parts);
-                if (task == null) {
-                    continue;
-                }
-                if (parts.get(1).equals("1")) {
-                    task.markAsDone();
-                }
+            Task task = parseTask(line);
+            if (task != null) {
                 tasks.add(task);
-            } catch (IllegalArgumentException | DateTimeParseException exception) {
-                // Ignore malformed records and continue loading the usable ones.
             }
         }
         return tasks;
@@ -114,6 +105,20 @@ public class Storage {
             Files.createDirectories(parent);
         }
         Files.write(filePath, lines, StandardCharsets.UTF_8);
+    }
+
+    private Task parseTask(String line) {
+        try {
+            List<String> parts = parseLine(line);
+            Task task = createTask(parts);
+            if (task != null && parts.get(1).equals("1")) {
+                task.markAsDone();
+            }
+            return task;
+        } catch (IllegalArgumentException | DateTimeParseException exception) {
+            // Ignore malformed records so that the remaining tasks can still be loaded.
+            return null;
+        }
     }
 
     private Task createTask(List<String> parts) {
