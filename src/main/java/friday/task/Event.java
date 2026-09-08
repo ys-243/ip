@@ -4,10 +4,8 @@ package friday.task;
  * Represents a task occurring between a start and end time.
  */
 public class Event extends Task {
-    /** Start value displayed for this event. */
-    protected String start;
-    /** End value displayed for this event. */
-    protected String end;
+    private final String start;
+    private final String end;
 
     /**
      * Creates an event from its description, start, and end values.
@@ -44,10 +42,9 @@ public class Event extends Task {
      */
     @Override
     public String toFileString() {
-        return type + "," + (isDone ? "1" : "0")
-                    + "," + escapeFileField(description)
-                    + "," + escapeFileField(start)
-                    + "," + escapeFileField(end);
+        return super.toFileString()
+                + "," + escapeFileField(start)
+                + "," + escapeFileField(end);
     }
 
     private static String requireField(String[] fields, int index, String name) {

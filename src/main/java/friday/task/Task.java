@@ -4,12 +4,9 @@ package friday.task;
  * Represents a task stored by the Friday application.
  */
 public class Task {
-    /** Human-readable description of this task. */
-    protected String description;
-    /** Whether this task has been completed. */
-    protected boolean isDone;
-    /** Marker identifying this task's type. */
-    protected String type;
+    private final String description;
+    private final String type;
+    private boolean isDone;
 
     /**
      * Creates a task with the specified description and type marker.

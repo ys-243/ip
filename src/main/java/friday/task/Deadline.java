@@ -11,8 +11,7 @@ public class Deadline extends Task {
     private static final DateTimeFormatter DISPLAY_FORMAT =
             DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
 
-    /** Due date of this deadline. */
-    protected LocalDate end;
+    private final LocalDate end;
 
     /**
      * Creates a deadline task from its description and due date.
@@ -46,9 +45,7 @@ public class Deadline extends Task {
      */
     @Override
     public String toFileString() {
-        return type + "," + (isDone ? "1" : "0")
-                    + "," + escapeFileField(description)
-                    + "," + escapeFileField(end.toString());
+        return super.toFileString() + "," + escapeFileField(end.toString());
     }
 
     /**
