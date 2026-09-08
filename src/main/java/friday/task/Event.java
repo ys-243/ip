@@ -29,6 +29,8 @@ public class Event extends Task {
         if (start.isBlank() || end.isBlank()) {
             throw new IllegalArgumentException("Event start and end cannot be empty.");
         }
+        assert !start.isBlank() && !end.isBlank()
+                : "Validated event times must remain nonblank after prefix removal";
     }
 
     /**

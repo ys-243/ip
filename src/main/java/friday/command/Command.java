@@ -125,6 +125,8 @@ public abstract class Command {
 
     private void markTask(TaskList tasks, Ui ui) throws FridayException {
         int taskIndex = getTaskNumber("mark", tasks.size()) - 1;
+        assert taskIndex >= 0 && taskIndex < tasks.size()
+                : "Validated task index must be within the task list";
         tasks.get(taskIndex).markAsDone();
         ui.showLine("Good! This task done liao: ");
         ui.showLine(tasks.get(taskIndex).toString());
@@ -132,14 +134,21 @@ public abstract class Command {
 
     private void unmarkTask(TaskList tasks, Ui ui) throws FridayException {
         int taskIndex = getTaskNumber("unmark", tasks.size()) - 1;
+        assert taskIndex >= 0 && taskIndex < tasks.size()
+                : "Validated task index must be within the task list";
         tasks.get(taskIndex).markAsUndone();
         ui.showLine("Never mind! Can do later: ");
         ui.showLine(tasks.get(taskIndex).toString());
     }
 
     private void deleteTask(TaskList tasks, Ui ui) throws FridayException {
+        int previousTaskCount = tasks.size();
         int taskIndex = getTaskNumber("delete", tasks.size()) - 1;
+        assert taskIndex >= 0 && taskIndex < tasks.size()
+                : "Validated task index must be within the task list";
         Task deletedTask = tasks.delete(taskIndex);
+        assert tasks.size() == previousTaskCount - 1
+                : "Deleting one task must reduce the task count by one";
         ui.showLine("Okay, I removed this task:");
         ui.showLine(deletedTask.toString());
         ui.showLine("you have " + tasks.size() + " tasks lah.");
@@ -168,7 +177,10 @@ public abstract class Command {
             throw new FridayException("todo need description leh.");
         }
         ui.showLine("okay okay, i add " + description + " to the list lor.");
+        int previousTaskCount = tasks.size();
         tasks.add(new Todo(description));
+        assert tasks.size() == previousTaskCount + 1
+                : "Adding one task must increase the task count by one";
         ui.showLine("you have " + tasks.size() + " tasks lah.");
     }
 
@@ -193,7 +205,10 @@ public abstract class Command {
                     "Tolong, an event's description, start, and end cannot be empty lei.");
         }
         Task event = new Event(new String[] {description, start, end});
+        int previousTaskCount = tasks.size();
         tasks.add(event);
+        assert tasks.size() == previousTaskCount + 1
+                : "Adding one task must increase the task count by one";
         ui.showLine("orh, don't forget to attend ah: ");
         ui.showLine(event.toString());
         ui.showLine("you have " + tasks.size() + " tasks lah.");
@@ -235,7 +250,10 @@ public abstract class Command {
             throw new FridayException("Deadline's description and date must fill up lei.");
         }
         Task deadline = new Deadline(new String[] {description, date});
+        int previousTaskCount = tasks.size();
         tasks.add(deadline);
+        assert tasks.size() == previousTaskCount + 1
+                : "Adding one task must increase the task count by one";
         ui.showLine("Remember to finish hor: ");
         ui.showLine(deadline.toString());
         ui.showLine("you have " + tasks.size() + " tasks lah.");
