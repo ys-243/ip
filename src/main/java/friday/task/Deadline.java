@@ -8,6 +8,7 @@ import java.util.Locale;
  * Represents a task that must be completed by a specified date.
  */
 public class Deadline extends Task {
+    private static final String DEADLINE_PREFIX = "by ";
     private static final DateTimeFormatter DISPLAY_FORMAT =
             DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
 
@@ -23,7 +24,9 @@ public class Deadline extends Task {
     public Deadline(String[] deadline) {
         super(requireField(deadline, 0, "Deadline", "description"), "[D]");
         String endValue = requireField(deadline, 1, "Deadline", "deadline");
-        String dateText = endValue.startsWith("by ") ? endValue.substring(3).trim() : endValue;
+        String dateText = endValue.startsWith(DEADLINE_PREFIX)
+                ? endValue.substring(DEADLINE_PREFIX.length()).trim()
+                : endValue;
         end = LocalDate.parse(dateText);
     }
 
