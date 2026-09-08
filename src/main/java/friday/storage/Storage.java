@@ -14,12 +14,6 @@ import friday.task.Task;
 import friday.task.TaskList;
 import friday.task.Todo;
 
-/* Format:
-    Todo_task: type,isdone, description,
-    Deadline_task: type, isdone, description, by
-    Event_task: type, isdone, description, from, to
- */
-
 /**
  * Loads and saves tasks using a line-based text file.
  */
@@ -60,11 +54,8 @@ public class Storage {
      *
      * @return Tasks read from the file.
      * @throws IOException If the file exists but cannot be read.
-     */
+    */
     public ArrayList<Task> load() throws IOException {
-        //read file
-        //convert line to Task object
-        //return ArrayList
         ArrayList<Task> tasks = new ArrayList<>();
         if (!Files.exists(filePath)) {
             return tasks;
@@ -104,8 +95,6 @@ public class Storage {
             throw new IllegalArgumentException("Task list cannot be null.");
         }
 
-        //convert each Task object to comma separated Strings
-        //write String to file
         ArrayList<String> lines = new ArrayList<>();
 
         for (Task task : tasks) {
