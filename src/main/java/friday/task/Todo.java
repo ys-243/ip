@@ -14,15 +14,4 @@ public class Todo extends Task {
     public Todo(String description) {
         super(description, "[T]");
     }
-
-    /**
-     * Returns the display representation of this to-do task.
-     *
-     * @return Display representation of the task.
-     */
-    @Override
-    public String toString() {
-        return super.toString();
-    }
-
 }
