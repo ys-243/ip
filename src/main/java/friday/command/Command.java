@@ -38,6 +38,8 @@ public abstract class Command {
         DELETE,
         /** Request to find a task */
         FIND,
+        /** Request to sort tasks alphabetically. */
+        SORT,
         /** Request to add a to-do task. */
         TODO,
         /** Request to add an event. */
@@ -101,6 +103,7 @@ public abstract class Command {
             case UNMARK -> unmarkTask(tasks, ui);
             case DELETE -> deleteTask(tasks, ui);
             case FIND -> findTasks(tasks, ui);
+            case SORT -> sortTasks(tasks, ui);
             case TODO -> addTodo(tasks, ui);
             case EVENT -> addEvent(tasks, ui);
             case ON_DATE -> showDeadlinesOnDate(tasks, ui);
@@ -168,6 +171,23 @@ public abstract class Command {
         }
         for (int i = 0; i < matches.size(); i++) {
             ui.showLine((i + 1) + "." + matches.get(i));
+        }
+    }
+
+    private void sortTasks(TaskList tasks, Ui ui) throws FridayException {
+        String direction = input.substring("sort".length()).trim();
+        if (direction.isEmpty()) {
+            tasks.sortAlphabetically();
+            ui.showLine("Okay, I sorted your tasks from A to Z.");
+        } else if (direction.equals("reverse")) {
+            tasks.sortReverseAlphabetically();
+            ui.showLine("Okay, I sorted your tasks from Z to A.");
+        } else if (direction.equals("type")) {
+            tasks.sortByType();
+            ui.showLine("Okay, I grouped your tasks by type.");
+        } else {
+            throw new FridayException(
+                    "Use 'sort' for A to Z, 'sort reverse' for Z to A, or 'sort type' by type.");
         }
     }
 

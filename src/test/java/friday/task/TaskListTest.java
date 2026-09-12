@@ -70,4 +70,52 @@ class TaskListTest {
 
         assertEquals(0, tasks.find("movie").size());
     }
+
+    @Test
+    void sortAlphabetically_mixedCaseDescriptions_sortsFromAToZIgnoringCase() {
+        TaskList tasks = createUnsortedTasks();
+
+        tasks.sortAlphabetically();
+
+        assertEquals("[T][ ] apple", tasks.get(0).toString());
+        assertEquals("[T][ ] Banana", tasks.get(1).toString());
+        assertEquals("[T][ ] cherry", tasks.get(2).toString());
+    }
+
+    @Test
+    void sortReverseAlphabetically_mixedCaseDescriptions_sortsFromZToAIgnoringCase() {
+        TaskList tasks = createUnsortedTasks();
+
+        tasks.sortReverseAlphabetically();
+
+        assertEquals("[T][ ] cherry", tasks.get(0).toString());
+        assertEquals("[T][ ] Banana", tasks.get(1).toString());
+        assertEquals("[T][ ] apple", tasks.get(2).toString());
+    }
+
+    @Test
+    void sortByType_mixedTaskTypes_groupsTasksInAlphabeticalTypeOrder() {
+        TaskList tasks = new TaskList();
+        Todo firstTodo = new Todo("buy milk");
+        Todo secondTodo = new Todo("read book");
+        tasks.add(firstTodo);
+        tasks.add(new Event(new String[] {"meeting", "2pm", "3pm"}));
+        tasks.add(new Deadline(new String[] {"submit report", "2026-09-30"}));
+        tasks.add(secondTodo);
+
+        tasks.sortByType();
+
+        assertEquals("[D][ ] submit report (by: Sep 30 2026)", tasks.get(0).toString());
+        assertEquals("[E][ ] meeting (from: 2pm to: 3pm)", tasks.get(1).toString());
+        assertSame(firstTodo, tasks.get(2));
+        assertSame(secondTodo, tasks.get(3));
+    }
+
+    private TaskList createUnsortedTasks() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("cherry"));
+        tasks.add(new Todo("apple"));
+        tasks.add(new Todo("Banana"));
+        return tasks;
+    }
 }

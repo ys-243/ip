@@ -10,6 +10,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import friday.parser.Parser;
+import friday.task.Deadline;
+import friday.task.Event;
 import friday.task.TaskList;
 import friday.task.Todo;
 import friday.ui.Ui;
@@ -109,5 +111,56 @@ class CommandTest {
         Parser.parse("find").execute(new TaskList(), ui);
 
         assertTrue(ui.messages.get(0).contains("specify a keyword"));
+    }
+
+    @Test
+    void execute_sortCommand_sortsTasksAlphabetically() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("write report"));
+        tasks.add(new Todo("buy milk"));
+
+        Parser.parse("sort").execute(tasks, new RecordingUi());
+
+        assertEquals("[T][ ] buy milk", tasks.get(0).toString());
+        assertEquals("[T][ ] write report", tasks.get(1).toString());
+    }
+
+    @Test
+    void execute_sortReverseCommand_sortsTasksReverseAlphabetically() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("buy milk"));
+        tasks.add(new Todo("write report"));
+
+        Parser.parse("sort reverse").execute(tasks, new RecordingUi());
+
+        assertEquals("[T][ ] write report", tasks.get(0).toString());
+        assertEquals("[T][ ] buy milk", tasks.get(1).toString());
+    }
+
+    @Test
+    void execute_sortTypeCommand_groupsTasksByType() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("buy milk"));
+        tasks.add(new Event(new String[] {"meeting", "2pm", "3pm"}));
+        tasks.add(new Deadline(new String[] {"submit report", "2026-09-30"}));
+
+        Parser.parse("sort type").execute(tasks, new RecordingUi());
+
+        assertTrue(tasks.get(0) instanceof Deadline);
+        assertTrue(tasks.get(1) instanceof Event);
+        assertTrue(tasks.get(2) instanceof Todo);
+    }
+
+    @Test
+    void execute_sortWithInvalidDirection_reportsUsageWithoutSorting() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("write report"));
+        tasks.add(new Todo("buy milk"));
+        RecordingUi ui = new RecordingUi();
+
+        Parser.parse("sort sideways").execute(tasks, ui);
+
+        assertEquals("[T][ ] write report", tasks.get(0).toString());
+        assertTrue(ui.messages.get(0).contains("sort type"));
     }
 }
