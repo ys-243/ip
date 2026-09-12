@@ -54,11 +54,8 @@ public class Storage {
      *
      * @return Tasks read from the file.
      * @throws IOException If the file exists but cannot be read.
-    */
+     */
     public ArrayList<Task> load() throws IOException {
-        //read file
-        //convert line to Task object
-        //return ArrayList
         ArrayList<Task> tasks = new ArrayList<>();
         if (!Files.exists(filePath)) {
             return tasks;
@@ -78,19 +75,6 @@ public class Storage {
                 continue;
             }
 
-            try {
-                List<String> parts = parseLine(line);
-                Task task = createTask(parts);
-                if (task == null) {
-                    continue;
-                }
-                assert parts.size() >= 3
-                        : "A created task must come from a complete storage record";
-                assert parts.get(1).equals("0") || parts.get(1).equals("1")
-                        : "A created task must have a validated completion flag";
-                if (parts.get(1).equals("1")) {
-                    task.markAsDone();
-                }
             Task task = parseTask(line);
             if (task != null) {
                 tasks.add(task);
