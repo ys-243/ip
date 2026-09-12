@@ -2,6 +2,7 @@ package friday.task;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -9,6 +10,10 @@ import java.util.List;
  * Owns and provides operations on Friday's collection of tasks.
  */
 public class TaskList implements Iterable<Task> {
+    private static final Comparator<Task> ALPHABETICAL_ORDER = Comparator.comparing(
+            Task::getDescription, String.CASE_INSENSITIVE_ORDER);
+    private static final Comparator<Task> TASK_TYPE_ORDER = Comparator.comparing(Task::getType);
+
     private final ArrayList<Task> tasks;
 
     /**
@@ -97,6 +102,27 @@ public class TaskList implements Iterable<Task> {
         return tasks.stream()
                 .filter(task -> task.descriptionContains(keyword))
                 .toList();
+    }
+
+    /**
+     * Sorts the tasks alphabetically by description, ignoring letter case.
+     */
+    public void sortAlphabetically() {
+        tasks.sort(ALPHABETICAL_ORDER);
+    }
+
+    /**
+     * Sorts the tasks in reverse alphabetical order by description, ignoring letter case.
+     */
+    public void sortReverseAlphabetically() {
+        tasks.sort(ALPHABETICAL_ORDER.reversed());
+    }
+
+    /**
+     * Groups tasks by type in Deadline, Event, and Todo order.
+     */
+    public void sortByType() {
+        tasks.sort(TASK_TYPE_ORDER);
     }
 
     /**

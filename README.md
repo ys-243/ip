@@ -49,6 +49,9 @@ Enter `bye` to exit cleanly and save the current task list.
 | `deadline DESCRIPTION /by YYYY-MM-DD` | Add a deadline | `deadline submit report /by 2026-08-30` |
 | `event DESCRIPTION /from START /to END` | Add an event | `event project meeting /from 2pm /to 3pm` |
 | `list` | Show every task | `list` |
+| `sort` | Sort tasks alphabetically (A-Z) | `sort` |
+| `sort reverse` | Sort tasks in reverse alphabetical order (Z-A) | `sort reverse` |
+| `sort type` | Group tasks by task type (Deadline, Event, Todo) | `sort type` |
 | `mark NUMBER` | Mark a task as done | `mark 1` |
 | `unmark NUMBER` | Mark a task as not done | `unmark 1` |
 | `delete NUMBER` | Delete a task | `delete 1` |

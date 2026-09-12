@@ -38,6 +38,14 @@ public class Task {
         isDone = false;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public String getType() {
+        return type;
+    }
+
     /** Returns whether this task's description contains the given keyword. */
     public boolean descriptionContains(String keyword) {
         if (keyword == null) {
