@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
@@ -47,4 +48,27 @@ class FridayTest {
 
         assertEquals(0, process.waitFor());
     }
+
+    @Test
+    void getResponse_failedLoad_warnsAndDoesNotOverwriteRecoveredFile(@TempDir Path temporaryDirectory)
+            throws Exception {
+        Path file = temporaryDirectory.resolve("tasks.txt");
+        Files.createDirectory(file);
+        Friday friday = new Friday(file);
+        Files.delete(file);
+        Files.writeString(file, "[T],0,precious task\n");
+
+        String response = friday.getResponse("todo new task");
+
+        assertTrue(response.contains("Could not load tasks"));
+        assertTrue(response.contains("Saving is disabled"));
+        assertEquals("[T],0,precious task\n", Files.readString(file));
+    }
+
+    @Test
+    void getResponse_nullInput_reportsMissingCommand(@TempDir Path temporaryDirectory) {
+        Friday friday = new Friday(temporaryDirectory.resolve("tasks.txt"));
+        assertTrue(friday.getResponse(null).contains("Enter a command"));
+    }
+
 }

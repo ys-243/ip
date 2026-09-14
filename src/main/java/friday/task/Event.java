@@ -1,5 +1,12 @@
 package friday.task;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
+import java.util.Locale;
+
 /**
  * Represents a task occurring between a start and end time.
  */
@@ -29,8 +36,49 @@ public class Event extends Task {
         if (start.isBlank() || end.isBlank()) {
             throw new IllegalArgumentException("Event start and end cannot be empty.");
         }
+        validateOrder();
         assert !start.isBlank() && !end.isBlank()
                 : "Validated event times must remain nonblank after prefix removal";
+    }
+
+    /** Validates structured dates and times while retaining free-text event labels. */
+    private void validateOrder() {
+        Comparable<?> startTime = parseTime(start);
+        Comparable<?> endTime = parseTime(end);
+        if (start.equalsIgnoreCase(end)) {
+            throw new IllegalArgumentException("Event end must be later than its start.");
+        }
+        if (startTime != null && endTime != null) {
+            if (!startTime.getClass().equals(endTime.getClass())) {
+                throw new IllegalArgumentException("Use the same date/time format for event start and end.");
+            }
+            boolean isOrdered = switch (startTime) {
+                case LocalDate date -> date.isBefore((LocalDate) endTime);
+                case LocalDateTime dateTime -> dateTime.isBefore((LocalDateTime) endTime);
+                case LocalTime time -> time.isBefore((LocalTime) endTime);
+                default -> true;
+            };
+            if (!isOrdered) {
+                throw new IllegalArgumentException("Event end must be later than its start.");
+            }
+        }
+    }
+
+    /** Parses supported ISO dates, ISO date-times, and clock times when recognizable. */
+    private static Comparable<?> parseTime(String value) {
+        if (value.matches("[+-]?\\d{4,}-.*")) {
+            return value.contains("T") ? LocalDateTime.parse(value) : LocalDate.parse(value);
+        }
+        if (value.matches("\\d{1,2}:.*") && !value.toLowerCase(Locale.ENGLISH).endsWith("m")) {
+            return LocalTime.parse(value);
+        }
+        if (value.toLowerCase(Locale.ENGLISH).matches("\\d.*[ap]m")) {
+            DateTimeFormatter format = DateTimeFormatter.ofPattern(
+                    value.contains(":") ? "h:mma" : "ha", Locale.ENGLISH)
+                    .withResolverStyle(ResolverStyle.STRICT);
+            return LocalTime.parse(value.toUpperCase(Locale.ENGLISH), format);
+        }
+        return null;
     }
 
     /**

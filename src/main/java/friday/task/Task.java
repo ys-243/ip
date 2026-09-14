@@ -24,6 +24,13 @@ public class Task {
         this.type = type;
     }
 
+    /** Returns whether task details match, ignoring completion status. */
+    public boolean hasSameDetails(Task other) {
+        // The third field onward contains the description and any dates, without completion status.
+        return other != null && type.equals(other.type)
+                && toFileString().split(",", 3)[2].equals(other.toFileString().split(",", 3)[2]);
+    }
+
     /**
      * Marks this task as completed.
      */

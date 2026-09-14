@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,8 @@ public class Storage {
     private static final String COMPLETE_STATUS = "1";
 
     private final Path filePath;
+    private boolean isSaveBlocked;
+    private int rejectedRecordCount;
 
     /**
      * Creates storage backed by the specified file.
@@ -57,7 +60,10 @@ public class Storage {
      */
     public ArrayList<Task> load() throws IOException {
         ArrayList<Task> tasks = new ArrayList<>();
-        if (!Files.exists(filePath)) {
+        isSaveBlocked = true;
+        rejectedRecordCount = 0;
+        if (Files.notExists(filePath)) {
+            isSaveBlocked = false;
             return tasks;
         }
 
@@ -66,9 +72,7 @@ public class Storage {
         }
 
         List<String> lines = Files.readAllLines(filePath, StandardCharsets.UTF_8);
-        if (lines.isEmpty()) {
-            return tasks;
-        }
+
 
         for (String line : lines) {
             if (line.isBlank()) {
@@ -76,10 +80,13 @@ public class Storage {
             }
 
             Task task = parseTask(line);
-            if (task != null) {
+            if (task != null && tasks.stream().noneMatch(existing -> existing.hasSameDetails(task))) {
                 tasks.add(task);
+            } else {
+                rejectedRecordCount++;
             }
         }
+        isSaveBlocked = rejectedRecordCount > 0;
         return tasks;
     }
 
@@ -95,6 +102,10 @@ public class Storage {
             throw new IllegalArgumentException("Task list cannot be null.");
         }
 
+        if (isSaveBlocked) {
+            throw new IOException("Saving is disabled because the original file could not be fully loaded. "
+                    + "Repair or back up the file and restart Friday.");
+        }
         ArrayList<String> lines = new ArrayList<>();
 
         for (Task task : tasks) {
@@ -108,7 +119,19 @@ public class Storage {
         if (parent != null) {
             Files.createDirectories(parent);
         }
-        Files.write(filePath, lines, StandardCharsets.UTF_8);
+        Path temporaryFile = Files.createTempFile(parent, "friday-", ".tmp");
+        try {
+            Files.write(temporaryFile, lines, StandardCharsets.UTF_8);
+            Files.move(temporaryFile, filePath.toAbsolutePath(), StandardCopyOption.ATOMIC_MOVE,
+                    StandardCopyOption.REPLACE_EXISTING);
+        } finally {
+            Files.deleteIfExists(temporaryFile);
+        }
+    }
+
+    /** Returns the number of malformed or duplicate records skipped during loading. */
+    public int getRejectedRecordCount() {
+        return rejectedRecordCount;
     }
 
     private Task parseTask(String line) {
@@ -181,7 +204,8 @@ public class Storage {
                 switch (character) {
                     case 'n' -> field.append('\n');
                     case 'r' -> field.append('\r');
-                    default -> field.append(character);
+                    case ',', '\\' -> field.append(character);
+                    default -> throw new IllegalArgumentException("Unknown escape in save record.");
                 }
                 escaped = false;
             } else if (character == '\\') {
