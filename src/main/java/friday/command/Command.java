@@ -2,6 +2,7 @@ package friday.command;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.List;
 
 import friday.exception.FridayException;
@@ -89,7 +90,10 @@ public abstract class Command {
         try {
             executeCommand(tasks, ui);
         } catch (DateTimeParseException exception) {
-            ui.showLine("Uhm bro, enter the date as yyyy-mm-dd, e.g. 2019-10-15.");
+            ui.showLine("Uhm bro, enter a valid date as yyyy-mm-dd, e.g. 2019-10-15. "
+                    + "Event times can also use HH:mm, h:mma, or yyyy-mm-ddTHH:mm.");
+        } catch (IllegalArgumentException exception) {
+            ui.showLine("SIALA!!! " + exception.getMessage());
         } catch (FridayException exception) {
             ui.showLine("SIALA!!! " + exception.getMessage());
         }
@@ -196,9 +200,10 @@ public abstract class Command {
         if (description.isEmpty()) {
             throw new FridayException("todo need description leh.");
         }
-        ui.showLine("okay okay, i add " + description + " to the list lor.");
+
         int previousTaskCount = tasks.size();
         tasks.add(new Todo(description));
+        ui.showLine("okay okay, i add " + description + " to the list lor.");
         assert tasks.size() == previousTaskCount + 1
                 : "Adding one task must increase the task count by one";
         ui.showLine("you have " + tasks.size() + " tasks lah.");
@@ -209,6 +214,7 @@ public abstract class Command {
         if (arguments.isEmpty()) {
             throw new FridayException("what event ah?");
         }
+        validateParameters(arguments, List.of("/from", "/to"));
         int fromIndex = arguments.indexOf(EVENT_START_SEPARATOR);
         int toIndex = arguments.indexOf(
                 EVENT_END_SEPARATOR, fromIndex + EVENT_START_SEPARATOR.length());
@@ -260,6 +266,7 @@ public abstract class Command {
         if (arguments.isEmpty()) {
             throw new FridayException("What thing got deadline ah?");
         }
+        validateParameters(arguments, List.of("/by"));
         int byIndex = arguments.indexOf(DEADLINE_SEPARATOR);
         if (byIndex < 0) {
             throw new FridayException("Tolong, write this format: deadline DESCRIPTION /by DATE");
@@ -277,6 +284,17 @@ public abstract class Command {
         ui.showLine("Remember to finish hor: ");
         ui.showLine(deadline.toString());
         ui.showLine("you have " + tasks.size() + " tasks lah.");
+    }
+
+    /** Checks that reserved parameters occur exactly once and in the expected order. */
+    private void validateParameters(String arguments, List<String> expected) throws FridayException {
+        List<String> parameters = Arrays.stream(arguments.split("\\s+"))
+                .filter(word -> word.equals("/from") || word.equals("/to") || word.equals("/by"))
+                .toList();
+        if (!parameters.equals(expected)) {
+            throw new FridayException("Specify each parameter once, in this order: "
+                    + String.join(" ", expected));
+        }
     }
 
     private int getTaskNumber(String command, int taskCount) throws FridayException {
