@@ -30,10 +30,15 @@ public class Main extends Application {
         ScrollPane conversation = createConversationArea(messages);
         TextField input = new TextField();
         input.setPromptText("Enter a command...");
+        input.setStyle("-fx-background-color: #fffdf5; -fx-background-radius: 10; "
+                + "-fx-border-color: #ffd1d6; -fx-border-radius: 10; "
+                + "-fx-text-fill: #403840; -fx-prompt-text-fill: #746974; "
+                + "-fx-focus-color: #d1eef6; -fx-faint-focus-color: transparent;");
         HBox inputBar = createInputBar(input, messages, conversation);
 
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(10));
+        root.setStyle("-fx-background-color: #fff0b8;");
         root.setCenter(conversation);
         root.setBottom(inputBar);
 
@@ -50,12 +55,15 @@ public class Main extends Application {
         ScrollPane conversation = new ScrollPane(messages);
         conversation.setFitToWidth(true);
         conversation.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        conversation.setStyle("-fx-background-color: transparent; -fx-background: #f4f4f4;");
+        conversation.setStyle("-fx-background-color: transparent; -fx-background: #fffdf5;");
         return conversation;
     }
 
     private HBox createInputBar(TextField input, VBox messages, ScrollPane conversation) {
         Button sendButton = new Button("Send");
+        sendButton.setStyle("-fx-base: #ffd6b3; -fx-background-radius: 10; "
+                + "-fx-text-fill: #403840; -fx-focus-color: #d1eef6; "
+                + "-fx-faint-focus-color: transparent;");
         sendButton.setDefaultButton(true);
         sendButton.setOnAction(event -> handleUserInput(input, messages, conversation));
         input.setOnAction(event -> handleUserInput(input, messages, conversation));
@@ -90,8 +98,8 @@ public class Main extends Application {
         message.setMaxWidth(400);
         message.setPadding(new Insets(8, 12, 8, 12));
         message.setStyle(isUser
-                ? "-fx-background-color: #2f80ed; -fx-background-radius: 14; -fx-text-fill: white;"
-                : "-fx-background-color: #e2e2e2; -fx-background-radius: 14; -fx-text-fill: black;");
+                ? "-fx-background-color: #d1eef6; -fx-background-radius: 14; -fx-text-fill: #403840;"
+                : "-fx-background-color: #ffd1d6; -fx-background-radius: 14; -fx-text-fill: #403840;");
 
         HBox messageRow = new HBox(message);
         messageRow.setAlignment(isUser ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
