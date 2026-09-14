@@ -163,4 +163,49 @@ class CommandTest {
         assertEquals("[T][ ] write report", tasks.get(0).toString());
         assertTrue(ui.messages.get(0).contains("sort type"));
     }
+
+    @Test
+    void execute_invalidArguments_reportsErrorsWithoutAddingTasks() {
+        List<String> inputs = List.of(
+                "event meeting /from 2pm /from 3pm /to 4pm",
+                "event meeting /to 4pm /from 2pm /to 5pm",
+                "event meeting /from 2pm /to 3pm /to 4pm",
+                "event meeting /from 2pm /to",
+                "event meeting /from 3pm /to 2pm",
+                "deadline report /by 2026-02-30",
+                "deadline report /by 2026-09-01 /by 2026-09-02",
+                "todo   ");
+        for (String input : inputs) {
+            TaskList tasks = new TaskList();
+            RecordingUi ui = new RecordingUi();
+            Parser.parse(input).execute(tasks, ui);
+            assertTrue(tasks.isEmpty(), input);
+            assertFalse(ui.messages.isEmpty(), input);
+        }
+    }
+
+    @Test
+    void execute_duplicateCompletedTask_reportsErrorWithoutSuccessMessage() {
+        TaskList tasks = new TaskList();
+        Todo task = new Todo("read book");
+        task.markAsDone();
+        tasks.add(task);
+        RecordingUi ui = new RecordingUi();
+
+        Parser.parse("todo read book").execute(tasks, ui);
+
+        assertEquals(1, tasks.size());
+        assertEquals(1, ui.messages.size());
+        assertTrue(ui.messages.getFirst().contains("already exists"));
+    }
+
+    @Test
+    void execute_extraWhitespace_acceptsCommand() {
+        TaskList tasks = new TaskList();
+        Parser.parse("  event\t meeting   /from\t2pm   /to  3pm  ")
+                .execute(tasks, new RecordingUi());
+        assertEquals(1, tasks.size());
+        assertTrue(Parser.parse("  bye  ").isExit());
+    }
+
 }

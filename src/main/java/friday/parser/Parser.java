@@ -18,7 +18,7 @@ public final class Parser {
     }
 
     /**
-     * Identifies the command word while preserving the complete input for
+     * Normalizes spaces and tabs and identifies the command word for
      * command-specific argument validation.
      *
      * @param input Input read from the user.
@@ -29,6 +29,7 @@ public final class Parser {
         if (input == null) {
             throw new IllegalArgumentException("Command input cannot be null.");
         }
+        input = input.strip().replaceAll("[\\t ]+", " ");
         if (input.isBlank()) {
             return new ParsedCommand(Command.Type.EMPTY, input);
         }

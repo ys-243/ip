@@ -21,6 +21,7 @@ public class Friday {
 
     private final Storage storage;
     private final TaskList tasks;
+    private String loadWarning;
 
     /**
      * Creates Friday using the default task storage file.
@@ -39,8 +40,13 @@ public class Friday {
         TaskList loadedTasks;
         try {
             loadedTasks = new TaskList(storage.load());
+            if (storage.getRejectedRecordCount() > 0) {
+                loadWarning = "Skipped " + storage.getRejectedRecordCount()
+                        + " malformed or duplicate records. Saving is disabled to protect the original file.";
+            }
         } catch (IOException exception) {
             loadedTasks = new TaskList();
+            loadWarning = "Could not load tasks: " + exception.getMessage();
         }
         tasks = loadedTasks;
     }
@@ -55,7 +61,8 @@ public class Friday {
         ByteArrayOutputStream responseBytes = new ByteArrayOutputStream();
         try (PrintStream responseOutput = new PrintStream(responseBytes, true, StandardCharsets.UTF_8)) {
             Ui responseUi = new Ui(responseOutput);
-            Command command = Parser.parse(input.trim());
+            showLoadWarning(responseUi);
+            Command command = Parser.parse(input == null ? "" : input);
             if (command.isExit()) {
                 responseUi.showLine("Bye. See you next time lah!");
             } else {
@@ -79,6 +86,7 @@ public class Friday {
     private void runConsole() {
         Ui ui = new Ui();
         ui.showWelcome();
+        showLoadWarning(ui);
         Command command = Parser.parse(ui.readCommand());
         while (!command.isExit()) {
             ui.showSeparator();
@@ -89,6 +97,13 @@ public class Friday {
         ui.close();
         ui.showGoodbye();
         saveTasks(ui);
+    }
+
+    private void showLoadWarning(Ui ui) {
+        if (loadWarning != null) {
+            ui.showLine(loadWarning);
+            loadWarning = null;
+        }
     }
 
     private void saveTasks(Ui ui) {

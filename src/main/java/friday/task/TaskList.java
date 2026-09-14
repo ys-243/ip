@@ -27,24 +27,30 @@ public class TaskList implements Iterable<Task> {
      * Creates a task list containing tasks loaded from storage.
      *
      * @param tasks Initial tasks copied into the new list.
-     * @throws IllegalArgumentException If tasks is {@code null}.
+     * @throws IllegalArgumentException If tasks is null or contains null or duplicate tasks.
      */
     public TaskList(List<Task> tasks) {
         if (tasks == null) {
             throw new IllegalArgumentException("Initial task list cannot be null.");
         }
-        this.tasks = new ArrayList<>(tasks);
+        this.tasks = new ArrayList<>();
+        for (Task task : tasks) {
+            add(task);
+        }
     }
 
     /**
      * Adds a task to the end of the list.
      *
      * @param task Task to add.
-     * @throws IllegalArgumentException If task is {@code null}.
+     * @throws IllegalArgumentException If task is null or its details duplicate an existing task.
      */
     public void add(Task task) {
         if (task == null) {
             throw new IllegalArgumentException("Task cannot be null.");
+        }
+        if (tasks.stream().anyMatch(existing -> existing.hasSameDetails(task))) {
+            throw new IllegalArgumentException("This task already exists.");
         }
         tasks.add(task);
     }
